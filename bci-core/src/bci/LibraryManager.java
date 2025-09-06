@@ -39,7 +39,7 @@ public class LibraryManager {
         if (filename != null && !filename.isEmpty())
           _library.importFile(filename);
       } catch (IOException | UnrecognizedEntryException /* FIXME maybe other exceptions */ e) {
-        throw new ImportFileException(datafile, e);
+        throw new ImportFileException(filename, e);
       }
     }
 
