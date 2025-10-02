@@ -7,6 +7,7 @@ import java.io.Serializable;
 
 /** Class that represents the library as a whole. */
 class Library implements Serializable {
+    private boolean _changed = false;
 
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
@@ -28,5 +29,27 @@ class Library implements Serializable {
 	    /* FIXME maybe other exceptions */  {
       //FIXME implement method
     }
+
+    
+/** 
+     * Set Hotel to changed. 
+     */
+    public void changed() {
+        setChanged(true);
+    }
+    
+    /** 
+     * @return boolean changed status
+     */
+    public boolean getChanged() {
+        return _changed;
+    }
+
+    /** 
+     * @param changed
+     */
+    public void setChanged(boolean changed) {
+        _changed = changed;
+}
 
 }
