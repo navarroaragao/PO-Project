@@ -11,12 +11,11 @@ class DoDisplayDate extends Command<LibraryManager> {
 
     DoDisplayDate(LibraryManager receiver) {
         super(Label.DISPLAY_DATE, receiver);
-	//FIXME maybe define fields
     }
 
     @Override
     protected final void execute() {
-        //FIXME implement command
+        int currentDate = _receiver.getLibrary().getCurrentDate();
+    _display.addLine(Message.currentDate(currentDate));
     }
-
 }

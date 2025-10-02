@@ -27,11 +27,22 @@ public class LibraryManager {
   }
 
   public void saveAs(String filename) throws MissingFileAssociationException, IOException {
-    //FIXME implement method
+    _filename = filename;
+    save();
   }
 
   public void load(String filename) throws UnavailableFileException {
-    //FIXME implement method
+    try {
+      ObjectInputStream ois = new ObjectInputStream(
+                              new BufferedInputStream(  
+                              new FileInputStream(filename)));
+      _filename = filename;
+      _library = (Library)ois.readObject();
+      _library.setChanged(false);
+    }
+    catch (IOException | ClassNotFoundException e) {
+      throw new UnavailableFileException(filename);
+    }
   }
 
   /**
@@ -46,16 +57,31 @@ public class LibraryManager {
     try {
     if (filename != null && !filename.isEmpty())
       _library.importFile(filename);
-    } catch (IOException | UnrecognizedEntryException /* FIXME maybe other exceptions */ e) {
+    } catch (IOException | UnrecognizedEntryException e) {
     throw new ImportFileException(filename, e);
     }
   }
 
   /**
-  * @return true if the hotel has changed since the last save.
+  * @return true if the library has changed since the last save.
   */
   public boolean hasChanged() { 
     return _library.getChanged();
-}
+  }
 
+/**
+   * Gets the current library.
+   * @return the current library
+   */
+  public Library getLibrary() {
+    return _library;
+  }
+
+  /**
+   * Sets the current library.
+   * @param library the library to set
+   */
+  public void setLibrary(Library library) {
+    _library = library;
+  }
 }
