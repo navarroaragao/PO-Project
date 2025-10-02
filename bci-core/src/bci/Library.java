@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.stream.Collectors;
 
 /** Class that represents the library as a whole. */
 public class Library implements Serializable {
@@ -60,16 +62,14 @@ public class Library implements Serializable {
         setChanged(true);
     }
 
-    public void showUser(int id) {
-        User user = _users.get(id);
-        if (user != null) {
-            user.toString();
-        } 
-    }
-
     public User getUser(int userId) {
         return _users.get(userId);
     }
 
-    
+    public List<String> showUsers() {
+        return _users.values().stream()
+            .sorted(Comparator.comparing(User::getName).thenComparing(User::getIdUser))
+            .map(User::toString)
+            .collect(Collectors.toList());
+    }
 }
