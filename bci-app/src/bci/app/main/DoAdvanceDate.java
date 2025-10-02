@@ -16,6 +16,6 @@ class DoAdvanceDate extends Command<LibraryManager> {
     @Override
     protected final void execute() {
         int days = integerField("days");
-    _receiver.getLibrary().advanceDate(days);
+        _receiver.getLibrary().advanceDate(days);
     }
 }

@@ -84,4 +84,11 @@ public class LibraryManager {
   public void setLibrary(Library library) {
     _library = library;
   }
+
+    /**
+     * Advances the date in the library
+     */
+    public void advanceDate(int days){
+        _library.advanceDate(days);
+    }
 }

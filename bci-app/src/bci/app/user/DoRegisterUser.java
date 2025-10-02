@@ -22,12 +22,11 @@ class DoRegisterUser extends Command<LibraryManager> {
             String name = stringField("name");
             String email = stringField("email");
             
-            _receiver.getLibrary().registerUser(name, email);
-            int id = _receiver.getLibrary().getCurrentUserID();
+            int id = _receiver.getLibrary().registerUser(name, email);
             _display.addLine(Message.registrationSuccessful(id));
         } catch (Exception e) {
             // Handle any registration failure
-        throw new UserRegistrationFailedException(stringField("name"), stringField("email"));
+            throw new UserRegistrationFailedException(stringField("name"), stringField("email"));
     }
 }
 
