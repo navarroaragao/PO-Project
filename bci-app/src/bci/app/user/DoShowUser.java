@@ -1,9 +1,10 @@
 package bci.app.user;
 
 import bci.LibraryManager;
+import bci.User;
+import bci.app.exceptions.NoSuchUserException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-//FIXME maybe import classes
 
 /**
  * 4.2.2. Show specific user.
@@ -12,12 +13,18 @@ class DoShowUser extends Command<LibraryManager> {
 
     DoShowUser(LibraryManager receiver) {
         super(Label.SHOW_USER, receiver);
-        //FIXME maybe define fields
+        addIntegerField("userId", Prompt.userId());
     }
 
     @Override
     protected final void execute() throws CommandException {
-        //FIXME implement command
-    }
+        int userId = integerField("userId");
+        User user = _receiver.getLibrary().getUser(userId);
 
+        if (user == null) {
+            throw new NoSuchUserException(userId);
+        }
+
+        _display.popup(user.toString());
+    }
 }

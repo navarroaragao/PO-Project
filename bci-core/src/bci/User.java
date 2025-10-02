@@ -59,6 +59,10 @@ public class User implements Serializable {
     public String getStatus() {
         return _status;
     }
+
+    public String getBehavior() {
+        return _behavior;
+    }
     
     public int getFines() {
         return _fines;
@@ -95,11 +99,15 @@ public class User implements Serializable {
 
 
     public void suspend() {
-        _status = "SUSPENDED";
+        _status = "SUSPENSO";
     }
     
     public void activate() {
-        _status = "ACTIVE";
+        _status = "ACTIVO";
+    }
+
+    public boolean isSuspended() {
+        return "SUSPENSO".equals(_status);
     }
     
     public void addLateRequest(Object request) {
@@ -115,7 +123,7 @@ public class User implements Serializable {
     }
     
     public boolean canBorrow() {
-        return "ACTIVE".equals(_status);
+        return "ACTIVO".equals(_status);
     }
     
     public int getRequestDuration(int days) {
@@ -144,6 +152,7 @@ public class User implements Serializable {
             _status = "ACTIVO";
         }
     }
+    
     
     @Override
     public String toString() {
