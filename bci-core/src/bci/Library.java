@@ -73,25 +73,24 @@ public class Library implements Serializable {
     }
 
     public int getCurrentUserID() {
-        return _users.size() + 1;
-    }
+        return _users.size();
+    }//
 
     /**
-     * Registers a new user in the library and returns the assigned id.
+     * Registers a new user in the library.
+     * @param id user identifier
      * @param name user name
      * @param email user email
-     * @return assigned user id
      */
-    public int registerUser(String name, String email) {
+    public void registerUser(String name, String email) {
         int id = getCurrentUserID();
-        // ensure uniqueness (in case entries were removed or keys exist)
-        while (_users.containsKey(id)) {
-            id++;
+        if (_users.containsKey(id)) {
+            // User already exists
+            return;
         }
         User user = new User(id, name, email);
         _users.put(id, user);
         setChanged(true);
-        return id;
     }
 
     /**
