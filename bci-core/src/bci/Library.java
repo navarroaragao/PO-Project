@@ -22,9 +22,10 @@ public class Library implements Serializable {
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
 
-    void importFile(String filename) throws UnrecognizedEntryException, IOException {
-      //try (BufferedReader reader = new BufferedReader(new FileReader(filename)))
+    void importFile(String filename) throws ImportFileException {
+
     }
+
 
     public void changed() {
         setChanged(true);
