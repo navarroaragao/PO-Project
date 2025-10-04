@@ -17,7 +17,7 @@ public class User implements Serializable {
     private String _name;
     private String _email;
     private String _status;
-    private String _behavior; // UserBehavior
+    private UserBehavior _behavior; // UserBehavior
     private List<Object> _lateRequests; // List<Requests>
     private int _fines;
     private int _currentRequests;
@@ -35,7 +35,7 @@ public class User implements Serializable {
         _name = name;
         _email = email;
         _status = "ACTIVO";
-        _behavior = "NORMAL";
+        _behavior = new Normal();
         _lateRequests = new ArrayList<>();
         _fines = 0;
         _currentRequests = 0;
@@ -61,7 +61,24 @@ public class User implements Serializable {
     }
 
     public String getBehavior() {
+        String className = _behavior.getClass().getSimpleName();
+        switch (className) {
+            case "Dutiful":
+                return "CUMPRIDOR";
+            case "Overdue":
+                return "FALTOSO";
+            case "Normal":
+            default:
+                return "NORMAL";
+        }
+    }
+    
+    public UserBehavior getBehaviorObject() {
         return _behavior;
+    }
+    
+    public void setBehavior(UserBehavior behavior) {
+        this._behavior = behavior;
     }
     
     public int getFines() {
@@ -126,13 +143,32 @@ public class User implements Serializable {
         return "ACTIVO".equals(_status);
     }
     
-    public int getRequestDuration(int days) {
+    public int getMaxAllowedWorks() {
+        return _behavior.getMaxAllowedWorks();
+    }
+    
+    public int getMaxAllowedRequestDuration() {
+        return _behavior.getMaxAllowedRequestDuration();
+    }
+    
+    public boolean canBorrowExpensive() {
+        return _behavior.canBorrowExpensive();
+    }
+    
+    public int getRequestDuration() {
         // Implementation depends on user behavior
-        return days;
+        return _behavior.getMaxAllowedRequestDuration();
     }
     
     public void calculateAndUpdateBehavior() {
         // Calculate behavior based on user history
+        if (_lateRequests.size() == 0 && _fines == 0) {
+            _behavior = new Dutiful();
+        } else if (_lateRequests.size() > 0 || _fines > 0) {
+            _behavior = new Overdue();
+        } else {
+            _behavior = new Normal();
+        }
     }
     
     public void updateStatus() {
@@ -156,10 +192,11 @@ public class User implements Serializable {
     
     @Override
     public String toString() {
-        if (_fines > 0) {
-            return _idUser + " - " + _name + " - " + _email + " - " + _status + " - EUR " + _fines;
+        String behaviorName = getBehavior();
+        if ("SUSPENSO".equals(_status) && _fines > 0) {
+            return _idUser + " - " + _name + " - " + _email + " - " + behaviorName + " - " + _status + " - EUR " + _fines;
         } else {
-            return _idUser + " - " + _name + " - " + _email + " - " + _status;
+            return _idUser + " - " + _name + " - " + _email + " - " + behaviorName + " - " + _status;
         }
     }
 }
