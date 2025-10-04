@@ -1,6 +1,10 @@
 package bci;
 
 import bci.exceptions.*;
+import bci.user.*;
+import bci.work.*;
+import bci.work.workCategory.*;
+import bci.creator.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -8,7 +12,6 @@ import java.io.Serializable;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
@@ -18,14 +21,207 @@ public class Library implements Serializable {
     private int _currentDate = 0;
     private Map<Integer, User> _users = new HashMap<>();
     private Map<Integer, Work> _works = new HashMap<>();
+    private Map<String, Creator> _creators = new HashMap<>();
 
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
 
-    void importFile(String filename) throws ImportFileException {
-
+    void importFile(String filename) throws UnrecognizedEntryException, IOException, 
+                                           NoSuchUserException, NoSuchWorkException, NoSuchCreatorException,
+                                           UserRegistrationFailedException, BorrowingRuleFailedException,
+                                           WorkNotBorrowedByUserException, UserIsActiveException {
+        var reader = new BufferedReader(new FileReader(filename));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            var fields = line.split("\\|");
+            process(fields);
+        }
+        _changed = true;
+        reader.close();
     }
 
+    /**
+     * Processes a line from the import file.
+     * @param fields the fields from the line split by "|"
+     * @throws UnrecognizedEntryException if the entry type is not recognized
+     * @throws NoSuchUserException if a referenced user doesn't exist
+     * @throws NoSuchWorkException if a referenced work doesn't exist
+     * @throws NoSuchCreatorException if a referenced creator doesn't exist
+     * @throws UserRegistrationFailedException if user registration fails
+     * @throws BorrowingRuleFailedException if borrowing rules are violated
+     * @throws WorkNotBorrowedByUserException if work is not borrowed by user
+     * @throws UserIsActiveException if user is already active
+     */
+    private void process(String[] fields) throws UnrecognizedEntryException, NoSuchUserException, 
+                                               NoSuchWorkException, NoSuchCreatorException,
+                                               UserRegistrationFailedException, BorrowingRuleFailedException,
+                                               WorkNotBorrowedByUserException, UserIsActiveException {
+        switch (fields[0]) {
+            case "USER":
+                processUser(fields);
+                break;
+            case "WORK":
+                processWork(fields);
+                break;
+            case "REQUEST":
+                processRequest(fields);
+                break;
+            
+        }
+    }
+
+    /**
+     * Processes a user entry from the import file.
+     * Format: USER|id|name|email
+     */
+    public User processUser(String... fields) throws UserRegistrationFailedException {
+        int id = Integer.parseInt(fields[1]);
+        String name = fields[2], email = fields[3];
+        
+        if (_users.containsKey(id)) throw new UserRegistrationFailedException(name, email);
+        
+        var user = new User(id, name, email);
+        _users.put(id, user);
+        _changed = true;
+        return user;
+    }
+
+    /**
+     * Processes a work entry from the import file.
+     * Format: WORK|id|title|creator|price|category
+     */
+    public Work processWork(String... fields) throws NoSuchCreatorException, UnrecognizedEntryException {
+        int id = Integer.parseInt(fields[1]);
+        String title = fields[2], creatorName = fields[3];
+        int price = Integer.parseInt(fields[4]);
+        String categoryName = fields[5];
+        
+        if (_works.containsKey(id)) return _works.get(id);
+        
+        // Try to get existing creator first, create only if needed
+        Creator creator;
+        try {
+            creator = creatorByKey(creatorName);
+        } catch (NoSuchCreatorException e) {
+            // Creator doesn't exist, create new one
+            creator = new Creator(creatorName);
+            _creators.put(creatorName, creator);
+        }
+        
+        // Create category
+        var category = getCategoryByName(categoryName);
+        if (category == null) throw new UnrecognizedEntryException("Unknown category: " + categoryName);
+        
+        var work = new SimpleWork(id, title, price, category, creator);
+        _works.put(id, work);
+        _changed = true;
+        return work;
+    }
+    
+
+    /**
+     * Processes a request entry from the import file.
+     * Format: REQUEST|userId|workId
+     */
+    public void processRequest(String... fields) throws NoSuchUserException, NoSuchWorkException, 
+                                                       BorrowingRuleFailedException, UnrecognizedEntryException {
+        int userId = Integer.parseInt(fields[1]);
+        int workId = Integer.parseInt(fields[2]);
+        
+        userByKey(userId);
+        workByKey(workId);
+        
+        _changed = true;
+    }
+    /**
+     * Gets a category by name, creating it if it doesn't exist.
+     * @param categoryName the category name
+     * @return the category instance
+     */
+    private Category getCategoryByName(String categoryName) {
+        switch (categoryName.toUpperCase()) {
+            case "FICTION":
+                return new Fiction();
+            case "TECHNICAL":
+                return new Technical();
+            case "REFERENCE":
+                return new Reference();
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Simple Work implementation for basic functionality.
+     */
+    private static class SimpleWork extends Work {
+        public SimpleWork(int id, String title, int price, Category category, Creator creator) {
+            super(id, title, price, category, creator);
+        }
+    }
+
+    /**
+     * Gets a user by ID.
+     * @param id the user ID
+     * @return the user
+     * @throws NoSuchUserException if user doesn't exist
+     */
+    public User userByKey(int id) throws NoSuchUserException {
+        var user = _users.get(id);
+        if (user == null) throw new NoSuchUserException(id);
+        return user;
+    }
+
+    /**
+     * Gets a work by ID.
+     * @param id the work ID
+     * @return the work
+     * @throws NoSuchWorkException if work doesn't exist
+     */
+    public Work workByKey(int id) throws NoSuchWorkException {
+        var work = _works.get(id);
+        if (work == null) throw new NoSuchWorkException(id);
+        return work;
+    }
+
+    /**
+     * Gets a creator by name.
+     * @param name the creator name
+     * @return the creator
+     * @throws NoSuchCreatorException if creator doesn't exist
+     */
+    public Creator creatorByKey(String name) throws NoSuchCreatorException {
+        var creator = _creators.get(name);
+        if (creator == null) throw new NoSuchCreatorException(name);
+        return creator;
+    }
+
+    /**
+     * Registers a new user in the library.
+     * @param user the user to register
+     */
+    public void registerUser(User user) {
+        _users.put(user.getIdUser(), user);
+        setChanged(true);
+    }
+
+    /**
+     * Registers a new work in the library.
+     * @param work the work to register
+     */
+    public void registerWork(Work work) {
+        _works.put(work.getIdWork(), work);
+        setChanged(true);
+    }
+
+    /**
+     * Registers a new creator in the library.
+     * @param creator the creator to register
+     */
+    public void registerCreator(Creator creator) {
+        _creators.put(creator.getName(), creator);
+        setChanged(true);
+    }
 
     public void changed() {
         setChanged(true);

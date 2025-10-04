@@ -1,4 +1,6 @@
-package bci;
+package bci.user;
+
+import bci.user.behaviorInterface.*;
 
 import java.io.Serializable;
 import java.util.List;

@@ -1,5 +1,6 @@
-package bci;
+package bci.work.workCategory;
 
+import bci.work.*;
 import java.util.List;
 
 /**

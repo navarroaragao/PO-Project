@@ -3,7 +3,6 @@ package bci.app.user;
 import bci.LibraryManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
-import bci.app.exceptions.UserRegistrationFailedException;
 
 /**
  * 4.2.1. Register new user.
@@ -19,16 +18,14 @@ class DoRegisterUser extends Command<LibraryManager> {
     @Override
     protected final void execute() throws CommandException {
         try {
-            String name = stringField("name");
-            String email = stringField("email");
+            var user = _receiver.getLibrary().processUser("USER", 
+                String.valueOf(_receiver.getLibrary().getCurrentUserID()),
+                stringField("name"), 
+                stringField("email"));
             
-            int id = _receiver.getLibrary().getCurrentUserID();
-            _receiver.getLibrary().registerUser(name, email);
-            _display.addLine(Message.registrationSuccessful(id));
-        } catch (Exception e) {
-            // Handle any registration failure
-        throw new UserRegistrationFailedException(stringField("name"), stringField("email"));
+            _display.addLine(Message.registrationSuccessful(user.getIdUser()));
+        } catch (bci.exceptions.UserRegistrationFailedException e) {
+            throw new bci.app.exceptions.UserRegistrationFailedException(stringField("name"), stringField("email"));
+        }
     }
-}
-
 }

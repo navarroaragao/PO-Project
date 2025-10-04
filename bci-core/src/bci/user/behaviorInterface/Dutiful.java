@@ -1,4 +1,4 @@
-package bci;
+package bci.user.behaviorInterface;
 
 /**
  * Dutiful user behavior - allows borrowing more works and expensive items.

@@ -1,4 +1,8 @@
-package bci;
+package bci.work.workType;
+
+import bci.work.workCategory.Category;
+import bci.work.*;
+import bci.creator.*;
 
 /**
  * Represents a DVD in the library system.

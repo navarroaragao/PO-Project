@@ -55,8 +55,13 @@ public class LibraryManager {
    * import file.
    */
   public void importFile(String filename) throws ImportFileException {
-    if (filename != null && !filename.isEmpty())
+    try {
       _library.importFile(filename);
+    } catch (UnrecognizedEntryException | IOException | NoSuchUserException | NoSuchWorkException |
+             NoSuchCreatorException | UserRegistrationFailedException | BorrowingRuleFailedException |
+             WorkNotBorrowedByUserException | UserIsActiveException e) {
+      throw new ImportFileException(filename, e);
+    }
   }
 
   /**

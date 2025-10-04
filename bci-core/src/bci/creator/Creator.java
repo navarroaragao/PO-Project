@@ -1,4 +1,6 @@
-package bci;
+package bci.creator;
+
+import bci.work.*;
 
 import java.io.Serializable;
 import java.util.List;

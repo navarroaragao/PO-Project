@@ -1,18 +1,18 @@
-package bci;
+package bci.user.behaviorInterface;
 
 /**
- * Normal user behavior - standard borrowing privileges.
+ * Overdue user behavior - restricted borrowing privileges.
  */
-public class Normal implements UserBehavior {
+public class Overdue implements UserBehavior {
     
     @Override
     public int getMaxAllowedWorks() {
-        return 3;
+        return 1;
     }
     
     @Override
     public int getMaxAllowedRequestDuration() {
-        return 3; // 3 days for normal users
+        return 1; // 1 day for overdue users
     }
     
     @Override

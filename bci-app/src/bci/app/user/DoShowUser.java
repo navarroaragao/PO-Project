@@ -1,7 +1,7 @@
 package bci.app.user;
 
 import bci.LibraryManager;
-import bci.User;
+import bci.user.*;
 import bci.app.exceptions.NoSuchUserException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;

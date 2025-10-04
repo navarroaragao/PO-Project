@@ -1,6 +1,11 @@
-package bci;
+package bci.work.workType;
 
 import java.util.List;
+
+import bci.work.*;
+import bci.creator.*;
+import bci.work.workCategory.Category;
+
 import java.util.ArrayList;
 
 /**

@@ -1,4 +1,4 @@
-package bci;
+package bci.user.behaviorInterface;
 
 /**
  * Interface that defines user behavior patterns for library operations.

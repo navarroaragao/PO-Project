@@ -1,6 +1,9 @@
-package bci;
+package bci.work;
 
 import java.io.Serializable;
+import bci.creator.*;
+
+import bci.work.workCategory.Category;
 
 /**
  * Abstract class representing a work in the library system.

@@ -1,13 +1,14 @@
-package bci;
+package bci.work.workCategory;
 
+import bci.work.*;
 import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Fiction category implementation.
+ * Technical category implementation.
  */
-public class Fiction implements Category, Serializable {
+public class Technical implements Category, Serializable {
     
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
@@ -16,16 +17,16 @@ public class Fiction implements Category, Serializable {
     private String _name;
     
     /**
-     * Constructor for Fiction category.
+     * Constructor for Technical category.
      */
-    public Fiction() {
-        _name = "Fiction";
+    public Technical() {
+        _name = "Technical";
         _works = new ArrayList<>();
     }
     
     @Override
     public List<Work> category(String name) {
-        if ("Fiction".equals(name)) {
+        if ("Technical".equals(name)) {
             return new ArrayList<>(_works);
         }
         return new ArrayList<>();

@@ -2,7 +2,7 @@ package bci.app.work;
 
 import bci.LibraryManager;
 import bci.app.exceptions.NoSuchWorkException;
-import bci.Work;
+import bci.work.*;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
