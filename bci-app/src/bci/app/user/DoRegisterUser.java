@@ -18,8 +18,7 @@ class DoRegisterUser extends Command<LibraryManager> {
     @Override
     protected final void execute() throws CommandException {
         try {
-            var user = _receiver.getLibrary().processUser("USER", 
-                String.valueOf(_receiver.getLibrary().getCurrentUserID()),
+            var user = _receiver.getLibrary().processUser("USER",
                 stringField("name"), 
                 stringField("email"));
             

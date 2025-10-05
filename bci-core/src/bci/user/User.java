@@ -19,8 +19,8 @@ public class User implements Serializable {
     private String _name;
     private String _email;
     private String _status;
-    private UserBehavior _behavior; // UserBehavior
-    private List<Object> _lateRequests; // List<Requests>
+    private UserBehavior _behavior; 
+    private List<Object> _lateRequests; 
     private int _fines;
     private int _currentRequests;
     private List<Object> _interestWork; // List<Work>

@@ -16,5 +16,4 @@ public class NoSuchUserException extends Exception {
     public int getUserId() {
         return _userId;
     }
-
 }

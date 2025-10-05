@@ -12,7 +12,7 @@ public class Dutiful implements UserBehavior {
     
     @Override
     public int getMaxAllowedRequestDuration() {
-        return 8; // 8 days for dutiful users
+        return 8;
     }
     
     @Override

@@ -7,14 +7,13 @@ import java.util.List;
 import java.util.ArrayList;
 
 /**
- * Represents a creator (author) in the library system.
+ * Represents a creator in the library system.
  */
 public class Creator implements Serializable {
     
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
     
-    // Attributes from UML
     private String _name;
     private List<Work> _works;
     
@@ -70,16 +69,15 @@ public class Creator implements Serializable {
     }
     
     @Override
-    public String toString() {
-        return _name;
-    }
-    
-    @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Creator creator = (Creator) obj;
         return _name != null ? _name.equals(creator._name) : creator._name == null;
     }
-    
+
+    @Override
+    public String toString() {
+        return _name;
+    }
 }

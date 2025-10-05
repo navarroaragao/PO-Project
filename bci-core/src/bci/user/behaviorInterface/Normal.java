@@ -12,7 +12,7 @@ public class Normal implements UserBehavior {
     
     @Override
     public int getMaxAllowedRequestDuration() {
-        return 3; // 3 days for normal users
+        return 3;
     }
     
     @Override

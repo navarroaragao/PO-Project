@@ -12,7 +12,7 @@ public class Overdue implements UserBehavior {
     
     @Override
     public int getMaxAllowedRequestDuration() {
-        return 1; // 1 day for overdue users
+        return 1;
     }
     
     @Override

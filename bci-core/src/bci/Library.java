@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Comparator;
 import java.util.stream.Collectors;
 
-/** Class that represents the library as a whole. */
+// Class that represents the library as a whole
 public class Library implements Serializable {
     private boolean _changed = false;
     private int _currentDate = 0;
@@ -316,5 +316,5 @@ public class Library implements Serializable {
         }
         }
     }
-
 }
+

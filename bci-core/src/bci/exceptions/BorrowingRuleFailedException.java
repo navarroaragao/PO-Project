@@ -15,6 +15,7 @@ public class BorrowingRuleFailedException extends Exception {
         _userId = userId;
         _workId = workId;
         _ruleId = ruleId;
+
     }
 
     public int getUserId() {
@@ -28,5 +29,4 @@ public class BorrowingRuleFailedException extends Exception {
     public int getRuleId() {
         return _ruleId;
     }
-
 }
