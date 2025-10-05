@@ -76,9 +76,16 @@ public class Library implements Serializable {
 
 
 
+    /**
+     * Processes a user entry from the import file.
+     * Format: USER:name:email
+     * ID is auto-generated incrementally
+     */
     public User processUser(String... fields) throws UserRegistrationFailedException {
-        int id = Integer.parseInt(fields[1]);
-        String name = fields[2], email = fields[3];
+        // Always auto-generate ID incrementally
+        int id = getCurrentUserID();
+        String name = fields[1];
+        String email = fields[2];
         
         if (_users.containsKey(id)) throw new UserRegistrationFailedException(name, email);
         
