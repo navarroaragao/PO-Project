@@ -6,9 +6,7 @@ import bci.app.exceptions.NoSuchUserException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-/**
- * 4.2.2. Show specific user.
- */
+
 class DoShowUser extends Command<LibraryManager> {
 
     DoShowUser(LibraryManager receiver) {

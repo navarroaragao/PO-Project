@@ -6,15 +6,11 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Represents a library user.
- */
 public class User implements Serializable {
     
     @java.io.Serial
     private static final long serialVersionUID = 202507171003L;
     
-    // Attributes from UML
     private int _idUser;
     private String _name;
     private String _email;
@@ -26,12 +22,7 @@ public class User implements Serializable {
     private List<Object> _interestWork; // List<Work>
     private List<Object> _notifications; // List<Notifications>
     
-    /**
-     * Constructor for User.
-     * @param id user identifier
-     * @param name user name
-     * @param email user email
-     */
+
     public User(int id, String name, String email) {
         _idUser = id;
         _name = name;
@@ -45,7 +36,6 @@ public class User implements Serializable {
         _notifications = new ArrayList<>();
     }
     
-    // Getters
     public int getIdUser() {
         return _idUser;
     }
@@ -158,12 +148,12 @@ public class User implements Serializable {
     }
     
     public int getRequestDuration() {
-        // Implementation depends on user behavior
+
         return _behavior.getMaxAllowedRequestDuration();
     }
     
     public void calculateAndUpdateBehavior() {
-        // Calculate behavior based on user history
+
         if (_lateRequests.size() == 0 && _fines == 0) {
             _behavior = new Dutiful();
         } else if (_lateRequests.size() > 0 || _fines > 0) {
@@ -174,16 +164,12 @@ public class User implements Serializable {
     }
     
     public void updateStatus() {
-        // Update status based on fines and behavior
+
         if (_fines > 0) {
             _status = "SUSPENSO";
         }
     }
     
-    /**
-     * Pays the user's fine completely and activates the user.
-     * @param amount amount to pay (must be >= total fine)
-     */
     public void payFine(int amount) {
         if (amount >= _fines) {
             _fines = 0;

@@ -5,9 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Reference category implementation.
- */
+
 public class Reference implements Category, Serializable {
     
     @java.io.Serial
@@ -16,9 +14,6 @@ public class Reference implements Category, Serializable {
     private List<Work> _works;
     private String _name;
     
-    /**
-     * Constructor for Reference category.
-     */
     public Reference() {
         _name = "Referência";
         _works = new ArrayList<>();
@@ -46,18 +41,10 @@ public class Reference implements Category, Serializable {
         return new ArrayList<>(_works);
     }
     
-    /**
-     * Gets the category name.
-     * @return the category name
-     */
     public String getName() {
         return _name;
     }
-    
-    /**
-     * Gets all works in this category.
-     * @return list of all works
-     */
+
     public List<Work> getWorks() {
         return new ArrayList<>(_works);
     }

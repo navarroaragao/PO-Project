@@ -4,9 +4,7 @@ import bci.LibraryManager;
 import pt.tecnico.uilib.menus.Command;
 import java.util.List;
 
-/**
- * 4.3.2. Display all works.
- */
+
 class DoDisplayWorks extends Command<LibraryManager> {
 
     DoDisplayWorks(LibraryManager receiver) {

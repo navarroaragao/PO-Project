@@ -6,9 +6,7 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import java.util.List;
 
-/**
- * 4.3.3. Display all works by a specific creator.
- */
+
 class DoDisplayWorksByCreator extends Command<LibraryManager> {
 
     DoDisplayWorksByCreator(LibraryManager receiver) {

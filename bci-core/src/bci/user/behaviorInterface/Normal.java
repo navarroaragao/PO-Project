@@ -1,8 +1,5 @@
 package bci.user.behaviorInterface;
 
-/**
- * Normal user behavior - standard borrowing privileges.
- */
 public class Normal implements UserBehavior {
     
     @Override

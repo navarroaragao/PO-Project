@@ -83,9 +83,7 @@ public class Library implements Serializable {
                                            WorkNotBorrowedByUserException, UserIsActiveException {
         var reader = new BufferedReader(new FileReader(filename));
         String line;
-        //Read all the lines in the file
         while ((line = reader.readLine()) != null) {
-            //Separate the lines into parameters every time there are ":"
             var fields = line.split(":");
             process(fields);
         }
@@ -142,7 +140,6 @@ public class Library implements Serializable {
      * @throws UserRegistrationFailedException if a user with the generated ID already exists.
      */
     public User processUser(String... fields) throws UserRegistrationFailedException {
-        // Always auto-generate ID incrementally
         int id = getCurrentUserID();
         String name = fields[1];
         String email = fields[2];
@@ -183,17 +180,16 @@ public class Library implements Serializable {
         String creatorsString = fields[2];
         int price = Integer.parseInt(fields[3]);
         String categoryName = fields[4];
-        String additionalInfo = fields[5]; // ISBN for BOOK, IGAC for DVD, etc
+        String additionalInfo = fields[5];
         int quantity = Integer.parseInt(fields[6]);
         
         int id = getCurrentWorkID();
         
-        // Process multiple creators (separated by comma for books)
         List<Creator> creators = new ArrayList<>();
-        String[] creatorNames = creatorsString.split(","); //To split every time there is a ","
+        String[] creatorNames = creatorsString.split(",");
         
         for (String creatorName : creatorNames) {
-            creatorName = creatorName.trim(); // Remove any extra spaces
+            creatorName = creatorName.trim(); 
             Creator creator;
             try {
                 creator = creatorByKey(creatorName);
@@ -239,7 +235,6 @@ public class Library implements Serializable {
                 work = new Book(id, title, price, category, additionalInfo, creators);
                 break;
             case "DVD":
-                // DVDs have only one director, so we take the first creator
                 Creator director = creators.isEmpty() ? null : creators.get(0);
                 work = new DVD(id, title, price, category, additionalInfo, director);
                 break;
@@ -247,9 +242,8 @@ public class Library implements Serializable {
                 throw new UnrecognizedEntryException(workType);
         }
         
-        // Set initial quantity
         if (quantity > 1) {
-            work.changeInventory(quantity - 1); // -1 because work starts with 1 copy
+            work.changeInventory(quantity - 1);
         }
         
         return work;

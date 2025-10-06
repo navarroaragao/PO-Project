@@ -7,9 +7,7 @@ import pt.tecnico.uilib.menus.Command;
 
 import java.io.IOException;
 
-/**
- * §4.1.1 Open and load files.
- */
+
 class DoSaveFile extends Command<LibraryManager> {
 
     DoSaveFile(LibraryManager receiver) {
@@ -30,5 +28,5 @@ class DoSaveFile extends Command<LibraryManager> {
 			eSaveAs.printStackTrace();   
 		}
     }
-
+	
 }

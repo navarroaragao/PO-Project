@@ -5,9 +5,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Technical category implementation.
- */
 public class Technical implements Category, Serializable {
     
     @java.io.Serial
@@ -16,9 +13,6 @@ public class Technical implements Category, Serializable {
     private List<Work> _works;
     private String _name;
     
-    /**
-     * Constructor for Technical category.
-     */
     public Technical() {
         _name = "Técnica e Científica";
         _works = new ArrayList<>();
@@ -46,18 +40,10 @@ public class Technical implements Category, Serializable {
         return new ArrayList<>(_works);
     }
     
-    /**
-     * Gets the category name.
-     * @return the category name
-     */
     public String getName() {
         return _name;
     }
     
-    /**
-     * Gets all works in this category.
-     * @return list of all works
-     */
     public List<Work> getWorks() {
         return new ArrayList<>(_works);
     }

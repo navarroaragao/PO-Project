@@ -1,8 +1,5 @@
 package bci.user.behaviorInterface;
 
-/**
- * Overdue user behavior - restricted borrowing privileges.
- */
 public class Overdue implements UserBehavior {
     
     @Override

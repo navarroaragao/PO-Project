@@ -4,9 +4,7 @@ import bci.LibraryManager;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-/**
- * 4.2.1. Register new user.
- */
+
 class DoRegisterUser extends Command<LibraryManager> {
 
     DoRegisterUser(LibraryManager receiver) {

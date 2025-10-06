@@ -4,9 +4,7 @@ import bci.LibraryManager;
 import pt.tecnico.uilib.menus.Command;
 import java.util.List;
 
-/**
- * 4.2.4. Show all users.
- */
+
 class DoShowUsers extends Command<LibraryManager> {
 
     DoShowUsers(LibraryManager receiver) {

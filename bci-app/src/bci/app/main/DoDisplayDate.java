@@ -2,11 +2,8 @@ package bci.app.main;
 
 import bci.LibraryManager;
 import pt.tecnico.uilib.menus.Command;
-//FIXME maybe import classes
 
-/**
- * 4.1.2. Display the current date.
- */
+
 class DoDisplayDate extends Command<LibraryManager> {
 
     DoDisplayDate(LibraryManager receiver) {
@@ -18,4 +15,5 @@ class DoDisplayDate extends Command<LibraryManager> {
         int currentDate = _receiver.getLibrary().getCurrentDate();
     _display.addLine(Message.currentDate(currentDate));
     }
+    
 }

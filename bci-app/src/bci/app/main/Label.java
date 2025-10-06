@@ -14,5 +14,4 @@ interface Label {
     String OPEN_MENU_USERS = "Menu de gestão de utentes";
     String OPEN_MENU_WORKS = "Menu de gestão de obras";
     String OPEN_MENU_REQUESTS = "Menu de gestão de requisições";
-
 }

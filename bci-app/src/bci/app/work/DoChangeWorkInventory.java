@@ -6,9 +6,7 @@ import bci.app.exceptions.NoSuchWorkException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-/**
- * 4.3.4. Change the number of exemplars of a work.
- */
+
 class DoChangeWorkInventory extends Command<LibraryManager> {
 
     DoChangeWorkInventory(LibraryManager receiver) {
@@ -29,7 +27,6 @@ class DoChangeWorkInventory extends Command<LibraryManager> {
         
         _receiver.getLibrary().changeWorkInventory(workId, amount);
         if (amount < 0) {
-            // Failed because not enough inventory to remove
             _display.addLine(Message.notEnoughInventory(workId, Math.abs(amount)));
         }
     }

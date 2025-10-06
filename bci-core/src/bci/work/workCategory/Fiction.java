@@ -5,9 +5,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-/**
- * Fiction category implementation.
- */
+
 public class Fiction implements Category, Serializable {
     
     @java.io.Serial
@@ -16,9 +14,6 @@ public class Fiction implements Category, Serializable {
     private List<Work> _works;
     private String _name;
     
-    /**
-     * Constructor for Fiction category.
-     */
     public Fiction() {
         _name = "Ficção";
         _works = new ArrayList<>();
@@ -46,18 +41,10 @@ public class Fiction implements Category, Serializable {
         return new ArrayList<>(_works);
     }
     
-    /**
-     * Gets the category name.
-     * @return the category name
-     */
     public String getName() {
         return _name;
     }
     
-    /**
-     * Gets all works in this category.
-     * @return list of all works
-     */
     public List<Work> getWorks() {
         return new ArrayList<>(_works);
     }
