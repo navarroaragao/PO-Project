@@ -18,7 +18,37 @@ import java.util.Comparator;
 import java.util.stream.Collectors;
 import java.util.Locale;
 
-// Class that represents the library as a whole
+/**
+ * The {@code Library} class represents a collection of users, works (such as books and DVDs), and creators.
+ * It provides functionality for importing data, registering and retrieving users, works, and creators,
+ * processing requests, and managing inventory and categories.
+ * <p>
+ * The library maintains internal state regarding changes, current date, and unique identifiers for users and works.
+ * It supports importing data from files, processing entries, and provides methods for displaying users and works.
+ * </p>
+ * <p>
+ * This class is serializable and is intended to be the core data structure for a library management system.
+ * </p>
+ *
+ * <p><b>Key Features:</b></p>
+ * <ul>
+ *   <li>Importing users, works, and requests from a file</li>
+ *   <li>Registering and retrieving users, works, and creators</li>
+ *   <li>Managing inventory and categories</li>
+ *   <li>Tracking changes and current date</li>
+ *   <li>Displaying sorted lists of users and works</li>
+ * </ul>
+ *
+ * <p>
+ * <b>Exceptions:</b> Many methods throw domain-specific exceptions such as
+ * {@link UnrecognizedEntryException}, {@link NoSuchUserException}, {@link NoSuchWorkException},
+ * {@link NoSuchCreatorException}, {@link UserRegistrationFailedException}, and
+ * {@link BorrowingRuleFailedException} to indicate various error conditions.
+ * </p>
+ *
+
+ * @version 202507171003L
+ */
 public class Library implements Serializable {
     private boolean _changed = false; //To check if it there is anything new to save
     private int _currentDate = 1;
@@ -183,6 +213,24 @@ public class Library implements Serializable {
     }
 
     
+    /**
+     * Creates a new Work instance of the specified type (BOOK or DVD) with the given parameters.
+     * <p>
+     * For BOOK, all creators are used. For DVD, only the first creator is used as the director.
+     * The initial inventory is set to the specified quantity (default is 1).
+     * </p>
+     *
+     * @param workType        the type of work to create ("BOOK" or "DVD")
+     * @param id              the unique identifier for the work
+     * @param title           the title of the work
+     * @param price           the price of the work
+     * @param category        the category of the work
+     * @param additionalInfo  additional information (e.g., ISBN for books, IGAC for DVDs)
+     * @param creators        the list of creators (authors or director)
+     * @param quantity        the initial quantity of the work in inventory
+     * @return                the created Work instance
+     * @throws UnrecognizedEntryException if the workType is not recognized
+     */
     private Work createWork(String workType, int id, String title, int price, Category category, 
                            String additionalInfo, List<Creator> creators, int quantity) throws UnrecognizedEntryException {
         Work work;
@@ -209,8 +257,20 @@ public class Library implements Serializable {
     
 
     /**
-     * Processes a request entry from the import file.
-     * Format: REQUEST|userId|workId
+     * Processes a request using the provided fields.
+     * <p>
+     * Expects the fields array to contain at least three elements, where:
+     * <ul>
+     *   <li>fields[1]: String representation of the user ID</li>
+     *   <li>fields[2]: String representation of the work ID</li>
+     * </ul>
+     * Validates the existence of the user and work by their IDs and marks the library as changed.
+     *
+     * @param fields Variable number of string arguments containing request data.
+     * @throws NoSuchUserException If the user with the specified ID does not exist.
+     * @throws NoSuchWorkException If the work with the specified ID does not exist.
+     * @throws BorrowingRuleFailedException If borrowing rules are violated during the request.
+     * @throws UnrecognizedEntryException If the entry is not recognized.
      */
     public void processRequest(String... fields) throws NoSuchUserException, NoSuchWorkException, 
                                                        BorrowingRuleFailedException, UnrecognizedEntryException {
@@ -305,22 +365,49 @@ public class Library implements Serializable {
         setChanged(true);
     }
 
+    /**
+     * Marks the object as changed by setting its changed state to {@code true}.
+     * This method should be called whenever the object's state is modified
+     * and observers need to be notified of the change.
+     */
     public void changed() {
         setChanged(true);
     }
     
+    /**
+     * Returns whether the state has changed.
+     *
+     * @return {@code true} if the state has changed; {@code false} otherwise.
+     */
     public boolean getChanged() {
         return _changed;
     }
 
+    /**
+     * Sets the changed state of the object.
+     *
+     * @param changed {@code true} if the object has been changed; {@code false} otherwise.
+     */
     public void setChanged(boolean changed) {
         _changed = changed;
     }
 
+    /**
+     * Returns the current date value.
+     *
+     * @return the current date as an integer
+     */
     public int getCurrentDate() {
         return _currentDate;
     }
 
+    /**
+     * Advances the current date by the specified number of days.
+     * If the number of days is greater than zero, the current date is incremented
+     * and the changed state is set to true.
+     *
+     * @param days the number of days to advance the current date; must be positive
+     */
     public void advanceDate(int days) {
         if (days > 0) {
             _currentDate += days;
@@ -328,10 +415,25 @@ public class Library implements Serializable {
         }
     }
 
+    /**
+     * Returns the current user ID, which is calculated as the size of the user list plus one.
+     *
+     * @return the current user ID
+     */
     public int getCurrentUserID() {
         return _users.size() + 1;
     }
 
+    /**
+     * Registers a new user with the specified name and email.
+     * <p>
+     * If a user with the current user ID already exists, the method returns without making changes.
+     * Otherwise, it creates a new {@link User} instance and adds it to the user map.
+     * The method also marks the state as changed.
+     *
+     * @param name  the name of the user to register
+     * @param email the email address of the user to register
+     */
     public void registerUser(String name, String email) {
         int id = getCurrentUserID();
         if (_users.containsKey(id)) {
@@ -342,10 +444,22 @@ public class Library implements Serializable {
         setChanged(true);
     }
 
+    /**
+     * Retrieves the {@link User} object associated with the specified user ID.
+     *
+     * @param userId the unique identifier of the user to retrieve
+     * @return the {@link User} corresponding to the given userId, or {@code null} if no such user exists
+     */
     public User getUser(int userId) {
         return _users.get(userId);
     }
 
+    /**
+     * Returns a list of all users in the library, sorted first by user name and then by user ID.
+     * Each user is represented as a string using their {@code toString()} method.
+     *
+     * @return a list of string representations of users, sorted by name and ID
+     */
     public List<String> showUsers() {
         return _users.values().stream()
             .sorted(Comparator.comparing(User::getName).thenComparing(User::getIdUser))
@@ -353,6 +467,12 @@ public class Library implements Serializable {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Returns a list of string representations of all works, sorted by their work ID.
+     *
+     * @return a {@code List<String>} containing the string representations of the works,
+     *         sorted in ascending order by their IDs.
+     */
     public List<String> showWorks() {
         return _works.values().stream()
             .sorted(Comparator.comparing(Work::getIdWork))
@@ -374,10 +494,22 @@ public class Library implements Serializable {
             .collect(Collectors.toList());
     }
 
+    /**
+     * Returns the next available work ID based on the current number of works.
+     * The ID is calculated as the size of the works collection plus one.
+     *
+     * @return the next work ID to be assigned
+     */
     public int getCurrentWorkID() {
         return _works.size() + 1;
     }
 
+    /**
+     * Retrieves a {@link Work} object by its unique identifier.
+     *
+     * @param WorkId the unique identifier of the work to retrieve
+     * @return the {@link Work} associated with the specified ID, or {@code null} if not found
+     */
     public Work getWork(int WorkId) {
         return _works.get(WorkId);
     }
