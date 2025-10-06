@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Comparator;
 import java.util.stream.Collectors;
+import java.util.Locale;
 
 // Class that represents the library as a whole
 public class Library implements Serializable {
@@ -295,6 +296,20 @@ public class Library implements Serializable {
     public List<String> showWorks() {
         return _works.values().stream()
             .sorted(Comparator.comparing(Work::getIdWork))
+            .map(Work::toString)
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * Shows all works by a specific creator, ordered by title (case-insensitive).
+     * @param creatorName the name of the creator
+     * @return list of works by the creator formatted as strings
+     * @throws NoSuchCreatorException if the creator doesn't exist
+     */
+    public List<String> showWorksByCreator(String creatorName) throws NoSuchCreatorException {
+        Creator creator = creatorByKey(creatorName);
+        return creator.getWorks().stream()
+            .sorted(Comparator.comparing(work -> work.getTitle().toLowerCase(Locale.getDefault())))
             .map(Work::toString)
             .collect(Collectors.toList());
     }
