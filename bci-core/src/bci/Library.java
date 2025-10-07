@@ -19,32 +19,33 @@ import java.util.stream.Collectors;
 import java.util.Locale;
 
 /**
- * The {@code Library} class represents a collection of users, works (such as books and DVDs), and creators.
- * It provides functionality for importing data, registering and retrieving users, works, and creators,
+ * The {@code Library} class represents a collection of users, works (such as books and DVDs or other classes 
+ * that can be implemented later on), and creators.
+ * It provides functionality for importing files, registering and reading users, works, and creators,
  * processing requests, and managing inventory and categories.
- * <p>
- * The library maintains internal state regarding changes, current date, and unique identifiers for users and works.
- * It supports importing data from files, processing entries, and provides methods for displaying users and works.
- * </p>
- * <p>
+ * 
+ * The library can detect if there has been any changes, the current date, and identifiers for users and works.
+ * It imports data from files, processes entries, and can display users and works.
+ * 
+ * 
  * This class is serializable and is intended to be the core data structure for a library management system.
- * </p>
+ * 
  *
- * <p><b>Key Features:</b></p>
- * <ul>
- *   <li>Importing users, works, and requests from a file</li>
- *   <li>Registering and retrieving users, works, and creators</li>
- *   <li>Managing inventory and categories</li>
- *   <li>Tracking changes and current date</li>
- *   <li>Displaying sorted lists of users and works</li>
- * </ul>
+ * Key Features:
+ * 
+ *   Importing users, works, and requests from a file
+ *   Registering and retrieving users, works, and creators
+ *   Managing inventory and categories
+ *   Tracking changes and current date
+ *   Displaying sorted lists of users and works
  *
- * <p>
- * <b>Exceptions:</b> Many methods throw domain-specific exceptions such as
+ *
+ * 
+ * Exceptions: 
  * {@link UnrecognizedEntryException}, {@link NoSuchUserException}, {@link NoSuchWorkException},
- * {@link NoSuchCreatorException}, {@link UserRegistrationFailedException}, and
- * {@link BorrowingRuleFailedException} to indicate various error conditions.
- * </p>
+ * {@link NoSuchCreatorException}, {@link UserRegistrationFailedException}, 
+ * {@link BorrowingRuleFailedException} 
+ * 
  *
 
  * @version 202507171003L
@@ -60,10 +61,10 @@ public class Library implements Serializable {
     private static final long serialVersionUID = 202507171003L;
 
     /**
-     * Imports data from a specified file and processes each entry.
+     * Imports data from a specified file and processes it.
      * 
      * Reads the file line by line, splits each line into fields using the colon (:) delimiter,
-     * and processes the resulting fields. Marks the state as changed after processing.
+     * and processes the resulting fields. Also marks the state as changed after processing.
      * 
      *
      * @param filename the path to the file to import
@@ -125,7 +126,7 @@ public class Library implements Serializable {
 
 
     /**
-     * Processes user registration by creating a new User with an auto-generated ID.
+     * Processes user registration by creating a new User with a generated ID.
      * 
      * The method expects an array of fields where:
      * 
@@ -133,7 +134,7 @@ public class Library implements Serializable {
      *   fields[2] - the user's email
      * 
      * If a user with the generated ID already exists, a UserRegistrationFailedException is thrown.
-     * The new user is added to the internal user map and marked as changed.
+     * The new user is added and the library is marked as changed.
      *
      * @param fields Variable number of String arguments containing user information.
      * @return The newly created User object.
@@ -161,13 +162,13 @@ public class Library implements Serializable {
      * 
      * The method expects the following fields in order:
      * 
-     *   workType: The type of the work (e.g., BOOK, DVD).</li>
-     *   title: The title of the work.</li>
-     *   creatorsString: A comma-separated list of creator names.</li>
-     *   price: The price of the work as a string (will be parsed to int).</li>
-     *   categoryName: The name of the category for the work.</li>
-     *   additionalInfo: Additional information (ISBN for BOOK, IGAC for DVD).</li>
-     *   quantity: The quantity of the work as a string (will be parsed to int).</li>
+     *   workType: The type of the work (e.g., BOOK, DVD).
+     *   title: The title of the work.
+     *   creatorsString: A creator's names (or list in case it's a book).
+     *   price: The price of the work.
+     *   categoryName: The name of the category for the work.
+     *   additionalInfo: Additional information (ISBN for BOOK, IGAC for DVD).
+     *   quantity: The quantity of the work.
      * 
      * If a creator does not exist, it will be created and added to the library.
      * The method creates the work, registers it, and marks the library as changed.
@@ -214,10 +215,9 @@ public class Library implements Serializable {
     
     /**
      * Creates a new Work instance of the specified type (BOOK or DVD) with the given parameters.
-     * <p>
-     * For BOOK, all creators are used. For DVD, only the first creator is used as the director.
-     * The initial inventory is set to the specified quantity (default is 1).
-     * </p>
+     *
+     * For BOOK, it reads the list of creators. For DVD, there's only one creator.
+     * 
      *
      * @param workType        the type of work to create ("BOOK" or "DVD")
      * @param id              the unique identifier for the work
@@ -254,13 +254,12 @@ public class Library implements Serializable {
     
 
     /**
-     * Processes a request using the provided fields.
-     * <p>
-     * Expects the fields array to contain at least three elements, where:
-     * <ul>
-     *   <li>fields[1]: String representation of the user ID</li>
-     *   <li>fields[2]: String representation of the work ID</li>
-     * </ul>
+     * Processes a request.
+     *
+     * 
+     *   fields[1]: String representation of the user ID
+     *   fields[2]: String representation of the work ID
+     * 
      * Validates the existence of the user and work by their IDs and marks the library as changed.
      *
      * @param fields Variable number of string arguments containing request data.
@@ -335,37 +334,7 @@ public class Library implements Serializable {
         return creator;
     }
 
-    /**
-     * Registers a new user in the library.
-     * @param user the user to register
-     */
-    public void registerUser(User user) {
-        if (user == null) return;
-        String name = user.getName();
-        String email = user.getEmail();
-        if (name == null || name.isBlank() || email == null || email.isBlank()) return;
 
-        _users.put(user.getIdUser(), user);
-        setChanged(true);
-    }
-
-    /**
-     * Registers a new work in the library.
-     * @param work the work to register
-     */
-    public void registerWork(Work work) {
-        _works.put(work.getIdWork(), work);
-        setChanged(true);
-    }
-
-    /**
-     * Registers a new creator in the library.
-     * @param creator the creator to register
-     */
-    public void registerCreator(Creator creator) {
-        _creators.put(creator.getName(), creator);
-        setChanged(true);
-    }
 
     /**
      * Marks the object as changed by setting its changed state to {@code true}.
@@ -426,28 +395,6 @@ public class Library implements Serializable {
         return _users.size() + 1;
     }
 
-    /**
-     * Registers a new user with the specified name and email.
-     * <p>
-     * If a user with the current user ID already exists, the method returns without making changes.
-     * Otherwise, it creates a new {@link User} instance and adds it to the user map.
-     * The method also marks the state as changed.
-     *
-     * @param name  the name of the user to register
-     * @param email the email address of the user to register
-     */
-    public void registerUser(String name, String email) {
-        int id = getCurrentUserID();
-        if (_users.containsKey(id)) {
-            return;
-        }
-        // Do not register users with empty name or email
-        if (name == null || name.isBlank() || email == null || email.isBlank()) return;
-
-        User user = new User(id, name, email);
-        _users.put(id, user);
-        setChanged(true);
-    }
 
     /**
      * Retrieves the {@link User} object associated with the specified user ID.
@@ -486,7 +433,7 @@ public class Library implements Serializable {
     }
 
     /**
-     * Shows all works by a specific creator, ordered by title (case-insensitive).
+     * Shows all works by a specific creator, ordered by title.
      * @param creatorName the name of the creator
      * @return list of works by the creator formatted as strings
      * @throws NoSuchCreatorException if the creator doesn't exist
