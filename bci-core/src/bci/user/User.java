@@ -19,8 +19,8 @@ public class User implements Serializable {
     private List<Object> _lateRequests; 
     private int _fines;
     private int _currentRequests;
-    private List<Object> _interestWork; // List<Work>
-    private List<Object> _notifications; // List<Notifications>
+    private List<Object> _interestWork; 
+    private List<Object> _notifications; 
     
 
     public User(int id, String name, String email) {
@@ -81,7 +81,7 @@ public class User implements Serializable {
         return _currentRequests;
     }
 
-    // Setters
+    
     public void setIdUser(int idUser) {
         this._idUser = idUser;
     }

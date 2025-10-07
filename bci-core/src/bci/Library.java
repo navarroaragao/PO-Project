@@ -143,9 +143,12 @@ public class Library implements Serializable {
         int id = getCurrentUserID();
         String name = fields[1];
         String email = fields[2];
-        
+        if (name == null || name.isBlank() || email == null || email.isBlank()) {
+            throw new UserRegistrationFailedException(name, email);
+        }
+
         if (_users.containsKey(id)) throw new UserRegistrationFailedException(name, email);
-        
+
         var user = new User(id, name, email);
         _users.put(id, user);
         _changed = true;
@@ -337,6 +340,11 @@ public class Library implements Serializable {
      * @param user the user to register
      */
     public void registerUser(User user) {
+        if (user == null) return;
+        String name = user.getName();
+        String email = user.getEmail();
+        if (name == null || name.isBlank() || email == null || email.isBlank()) return;
+
         _users.put(user.getIdUser(), user);
         setChanged(true);
     }
@@ -433,6 +441,9 @@ public class Library implements Serializable {
         if (_users.containsKey(id)) {
             return;
         }
+        // Do not register users with empty name or email
+        if (name == null || name.isBlank() || email == null || email.isBlank()) return;
+
         User user = new User(id, name, email);
         _users.put(id, user);
         setChanged(true);
