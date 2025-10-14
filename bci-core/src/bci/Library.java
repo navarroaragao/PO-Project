@@ -459,14 +459,14 @@ public class Library implements Serializable {
      * Retrieves a {@link Work} object by its unique identifier.
      *
      * @param WorkId the unique identifier of the work to retrieve
-     * @return the {@link Work} associated with the specified ID, or {@code null} if not found
+     * @return the {@link Work} associated with the specified ID, or {@code null} if not found.
      */
     public Work getWork(int WorkId) {
         return _works.get(WorkId);
     }
     
     /**
-     * Changes the inventory of a work by the specified amount.
+     * Changes the inventory of a work by the specified amount. 
      * @param workId the work identifier
      * @param amount the amount to change (positive to add, negative to remove)
      * @return true if successful, false if work doesn't exist or not enough inventory
