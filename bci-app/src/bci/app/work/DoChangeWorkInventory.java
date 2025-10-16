@@ -25,10 +25,13 @@ class DoChangeWorkInventory extends Command<LibraryManager> {
             throw new NoSuchWorkException(workId);
         }
         
-        _receiver.getLibrary().changeWorkInventory(workId, amount);
-        if (work.getTotalCopies() - amount < 0) {
-            _display.addLine(Message.notEnoughInventory(workId, Math.abs(amount)));
+        if (work.getTotalCopies() + amount < 0) {
+            _display.addLine(Message.notEnoughInventory(workId, amount));
         }
+        else {
+            _receiver.getLibrary().changeWorkInventory(workId, amount);
+        }
+        
     }
 
 }

@@ -3,6 +3,7 @@ package bci.app.main;
 import bci.LibraryManager;
 import bci.app.exceptions.FileOpenFailedException;
 import bci.exceptions.UnavailableFileException;
+import bci.exceptions.ImportFileException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
@@ -24,9 +25,13 @@ class DoOpenFile extends Command<LibraryManager> {
             
             String filename = Form.requestString(Prompt.openFile());
             
-            _receiver.load(filename);
+            if (filename.endsWith(".import")) {
+                _receiver.importFile(filename);
+            } else {
+                _receiver.load(filename);
+            }
             
-        } catch (UnavailableFileException e) {
+        } catch (UnavailableFileException | ImportFileException e) {
             throw new FileOpenFailedException(e);
         }
     }
