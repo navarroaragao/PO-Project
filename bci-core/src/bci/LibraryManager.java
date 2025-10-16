@@ -1,10 +1,8 @@
 package bci;
 
 import bci.exceptions.*;
-import bci.work.Work;
 import java.io.*;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * The façade class.
@@ -135,19 +133,4 @@ public class LibraryManager {
         return _library.searchWorks(term);
     }
 
-    /**
-     * Performs a search using the given search strategy.
-     * 
-     * @param searchStrategy the search strategy to use
-     * @param term the search term
-     * @return a list of works that match the search criteria, formatted as strings
-     */
-    public List<String> performSearch(Search searchStrategy, String term) {
-        List<Work> allWorks = _library.getAllWorks();
-        List<Work> matchedWorks = searchStrategy.search(term, allWorks);
-        
-        return matchedWorks.stream()
-                .map(Work::toString)
-                .collect(Collectors.toList());
-    }
 }

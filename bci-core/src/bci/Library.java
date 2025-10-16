@@ -325,6 +325,10 @@ public class Library implements Serializable {
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
         
+        // Check if return was on time and record it
+        boolean wasOnTime = _currentDate <= activeRequest.getRequestLimit();
+        user.recordReturn(wasOnTime);
+        
         // Calculate fine if any
         int fine = activeRequest.calculateFine(_currentDate);
         if (fine > 0) {

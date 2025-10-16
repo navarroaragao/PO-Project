@@ -16,9 +16,10 @@ public class User implements Serializable {
     private String _email;
     private String _status;
     private UserBehavior _behavior; 
-    private List<Object> _lateRequests; 
+    private int _lateRequests; 
     private int _fines;
     private int _currentRequests;
+    private int _consecutiveOnTime;
     private List<Object> _interestWork; 
     private List<Object> _notifications; 
     
@@ -29,9 +30,10 @@ public class User implements Serializable {
         _email = email;
         _status = "ACTIVO";
         _behavior = new Normal();
-        _lateRequests = new ArrayList<>();
+        _lateRequests = 0;
         _fines = 0;
         _currentRequests = 0;
+        _consecutiveOnTime = 0;
         _interestWork = new ArrayList<>();
         _notifications = new ArrayList<>();
     }
@@ -106,6 +108,9 @@ public class User implements Serializable {
         this._currentRequests = currentRequests;
     }
 
+    public void setConsecutiveOnTime(int consecutiveOnTime) {
+        _consecutiveOnTime = consecutiveOnTime;
+    } 
 
     public void suspend() {
         _status = "SUSPENSO";
@@ -120,15 +125,30 @@ public class User implements Serializable {
     }
     
     public void addLateRequest(Object request) {
-        _lateRequests.add(request);
+        _lateRequests += 1;
     }
-    
-    public void removeLateRequest(Object request) {
-        _lateRequests.remove(request);
+
+    public void addConsecutiveOnTime(Object request) {
+        _consecutiveOnTime += 1;
     }
     
     public void addFine(int value) {
         _fines += value;
+    }
+
+    /**
+     * Registra uma devolução e atualiza os contadores de comportamento
+     * @param wasOnTime true se a devolução foi feita no prazo
+     */
+    public void recordReturn(boolean wasOnTime) {
+        if (wasOnTime) {
+            _consecutiveOnTime++;
+            _lateRequests = 0; // Reset late requests counter
+        } else {
+            _lateRequests++;
+            _consecutiveOnTime = 0; // Reset consecutive on time counter
+        }
+        calculateAndUpdateBehavior();
     }
     
     public boolean canBorrow() {
@@ -148,17 +168,28 @@ public class User implements Serializable {
     }
     
     public int getRequestDuration() {
-
         return _behavior.getMaxAllowedRequestDuration();
+    }
+
+    public int getCurrentOnTime() {
+        return _consecutiveOnTime;
     }
     
     public void calculateAndUpdateBehavior() {
-
-        if (_lateRequests.size() == 0 && _fines == 0) {
+        // Cumpridor: últimas 5 requisições rigorosamente no prazo
+        if (_consecutiveOnTime >= 5) {
             _behavior = new Dutiful();
-        } else if (_lateRequests.size() > 0 || _fines > 0) {
+        } 
+        // Faltoso: últimas 3 requisições atrasadas  
+        else if (_lateRequests >= 3) {
             _behavior = new Overdue();
-        } else {
+        } 
+        // Normal: utente faltoso que fez 3 devoluções consecutivas no prazo, ou casos gerais
+        else if (_behavior instanceof Overdue && _consecutiveOnTime >= 3) {
+            _behavior = new Normal();
+        } 
+        // Todos os outros casos: normal
+        else {
             _behavior = new Normal();
         }
     }
