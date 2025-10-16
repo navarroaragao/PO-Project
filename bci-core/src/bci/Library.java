@@ -253,31 +253,60 @@ public class Library implements Serializable {
     }
     
 
-    /**
-     * Processes a request.
-     *
-     * 
-     *   fields[1]: String representation of the user ID
-     *   fields[2]: String representation of the work ID
-     * 
-     * Validates the existence of the user and work by their IDs and marks the library as changed.
+        /**
+     * Processes a request by creating a Request object and verifying borrowing rules.
      *
      * @param fields Variable number of string arguments containing request data.
+     *               fields[1]: String representation of the user ID
+     *               fields[2]: String representation of the work ID
      * @throws NoSuchUserException If the user with the specified ID does not exist.
      * @throws NoSuchWorkException If the work with the specified ID does not exist.
      * @throws BorrowingRuleFailedException If borrowing rules are violated during the request.
      * @throws UnrecognizedEntryException If the entry is not recognized.
+     * @return the request limit date for successful requests
      */
-    public void processRequest(String... fields) throws NoSuchUserException, NoSuchWorkException, 
+    public int processRequest(String... fields) throws NoSuchUserException, NoSuchWorkException, 
                                                        BorrowingRuleFailedException, UnrecognizedEntryException {
         int userId = Integer.parseInt(fields[1]);
         int workId = Integer.parseInt(fields[2]);
         
-        userByKey(userId);
-        workByKey(workId);
-        
-        _changed = true;
+        return requestWork(userId, workId);
     }
+    
+    /**
+     * Processes a work request for interactive use.
+     * 
+     * @param userId the user ID
+     * @param workId the work ID
+     * @throws NoSuchUserException If the user with the specified ID does not exist.
+     * @throws NoSuchWorkException If the work with the specified ID does not exist.
+     * @throws BorrowingRuleFailedException If borrowing rules are violated during the request.
+     * @return the request limit date for successful requests
+     */
+    public int requestWork(int userId, int workId) throws NoSuchUserException, NoSuchWorkException, 
+                                                          BorrowingRuleFailedException {
+        User user = userByKey(userId);
+        Work work = workByKey(workId);
+        
+        // Create the request
+        Request request = new Request(user, work, _currentDate);
+        
+        // Verify borrowing rules
+        int ruleViolated = request.identifyRule();
+        
+        if (ruleViolated == 0) {
+            // All rules passed, proceed with the request
+            work.removeCopy();
+            user.setCurrentRequests(user.getCurrentRequests() + 1);
+            _changed = true;
+            
+            return request.getRequestLimit(); // Return limit date for success message
+        } else {
+            // Rule violated, throw appropriate exception
+            throw new BorrowingRuleFailedException(userId, workId, ruleViolated);
+        }
+    }
+
     /**
      * Gets a category by name, creating it if it doesn't exist.
      * @param categoryName the category name
