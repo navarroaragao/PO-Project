@@ -1,6 +1,11 @@
 package bci.user.behaviorInterface;
 
-public class Overdue implements UserBehavior {
+import java.io.Serializable;
+
+public class Overdue implements UserBehavior, Serializable {
+    
+    @java.io.Serial
+    private static final long serialVersionUID = 202507171003L;
     
     @Override
     public int getMaxAllowedWorks() {

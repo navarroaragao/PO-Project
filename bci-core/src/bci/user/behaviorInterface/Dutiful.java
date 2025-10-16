@@ -1,6 +1,11 @@
 package bci.user.behaviorInterface;
 
-public class Dutiful implements UserBehavior {
+import java.io.Serializable;
+
+public class Dutiful implements UserBehavior, Serializable {
+    
+    @java.io.Serial
+    private static final long serialVersionUID = 202507171003L;
     
     @Override
     public int getMaxAllowedWorks() {
