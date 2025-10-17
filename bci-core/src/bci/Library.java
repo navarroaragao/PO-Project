@@ -332,13 +332,13 @@ public class Library implements Serializable {
         // Calculate fine BEFORE marking as returned
         int fine = activeRequest.calculateFine(_currentDate);
         
+        // Check if the work was unavailable BEFORE processing the return
+        Work work = activeRequest.getWork();
+        boolean workWasUnavailable = work.getAvailableCopies() == 0;
+        
         // Process the return
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
-        
-        // Check if the work was previously unavailable and now becomes available
-        Work work = activeRequest.getWork();
-        boolean workWasUnavailable = work.getAvailableCopies() == 1; // Will be 1 after the return
         
         // Send availability notifications if work was unavailable and now has copies
         if (workWasUnavailable) {
