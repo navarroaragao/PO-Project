@@ -1,6 +1,8 @@
 package bci.user;
 
 import bci.user.behaviorInterface.*;
+import bci.Notification;
+import bci.Request;
 
 import java.io.Serializable;
 import java.util.List;
@@ -21,7 +23,7 @@ public class User implements Serializable {
     private int _currentRequests;
     private int _consecutiveOnTime;
     private List<Integer> _interestWork; 
-    private List<Object> _notifications; 
+    private List<Notification> _notifications; 
     
 
     public User(int id, String name, String email) {
@@ -124,11 +126,11 @@ public class User implements Serializable {
         return "SUSPENSO".equals(_status);
     }
     
-    public void addLateRequest(Object request) {
+    public void addLateRequest(Request request) {
         _consecutiveLate += 1;
     }
 
-    public void addConsecutiveOnTime(Object request) {
+    public void addConsecutiveOnTime(Request request) {
         _consecutiveOnTime += 1;
     }
     
@@ -217,7 +219,7 @@ public class User implements Serializable {
      * Adds a notification to the user's notification list
      * @param notification the notification to add
      */
-    public void addNotification(Object notification) {
+    public void addNotification(Notification notification) {
         _notifications.add(notification);
     }
     
@@ -225,8 +227,8 @@ public class User implements Serializable {
      * Gets all user notifications and clears the list
      * @return list of notifications in the order they were received
      */
-    public List<Object> getAndClearNotifications() {
-        List<Object> notifications = new ArrayList<>(_notifications);
+    public List<Notification> getAndClearNotifications() {
+        List<Notification> notifications = new ArrayList<>(_notifications);
         _notifications.clear();
         return notifications;
     }

@@ -49,7 +49,7 @@ public class Request implements Serializable {
      * 
      * @return the number of days for the request duration
      */
-    private int calculateRequestDuration() {
+    public int calculateRequestDuration() {
         int totalCopies = _work.getTotalCopies();
         String userBehavior = _user.getBehavior();
         

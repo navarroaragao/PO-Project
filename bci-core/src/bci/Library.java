@@ -111,21 +111,14 @@ public class Library implements Serializable {
      * @throws WorkNotBorrowedByUserException if work is not borrowed by user
      * @throws UserIsActiveException if user is already active
      */
-    private void process(String[] fields) throws UnrecognizedEntryException, NoSuchUserException, 
+    public void process(String[] fields) throws UnrecognizedEntryException, NoSuchUserException, 
                                                NoSuchWorkException, NoSuchCreatorException,
                                                UserRegistrationFailedException, BorrowingRuleFailedException,
                                                WorkNotBorrowedByUserException, UserIsActiveException {
         switch (fields[0]) {
-            case "USER":
-                processUser(fields);
-                break;
-            case "BOOK":
-            case "DVD":
-                processWork(fields);
-                break;
-            // REQUEST cases no longer processed through import
-            default:
-                throw new UnrecognizedEntryException(fields[0]);
+            case "USER" -> processUser(fields);
+            case "BOOK", "DVD" -> processWork(fields);
+            default -> throw new UnrecognizedEntryException(fields[0]);
         }
     }
 
@@ -235,20 +228,14 @@ public class Library implements Serializable {
      * @return                the created Work instance
      * @throws UnrecognizedEntryException if the workType is not recognized
      */
-    private Work createWork(String workType, int id, String title, int price, Category category, 
+    public Work createWork(String workType, int id, String title, int price, Category category, 
                            String additionalInfo, List<Creator> creators, int quantity) throws UnrecognizedEntryException {
-        Work work;
-        switch (workType.toUpperCase()) {
-            case "BOOK":
-                work = new Book(id, title, price, category, additionalInfo, creators);
-                break;
-            case "DVD":
-                Creator director = creators.isEmpty() ? null : creators.get(0);
-                work = new DVD(id, title, price, category, additionalInfo, director);
-                break;
-            default:
-                throw new UnrecognizedEntryException(workType);
-        }
+        Work work = switch (workType.toUpperCase()) {
+            case "BOOK" -> new Book(id, title, price, category, additionalInfo, creators);
+            case "DVD" -> new DVD(id, title, price, category, additionalInfo, 
+                                 creators.isEmpty() ? null : creators.get(0));
+            default -> throw new UnrecognizedEntryException(workType);
+        };
         
         if (quantity > 1) {
             work.changeInventory(quantity - 1);
@@ -434,17 +421,13 @@ public class Library implements Serializable {
      * @param categoryName the category name
      * @return the category instance
      */
-    private Category getCategoryByName(String categoryName) {
-        switch (categoryName.toUpperCase()) {
-            case "FICTION":
-                return new Fiction();
-            case "SCITECH":
-                return new Technical();
-            case "REFERENCE":
-                return new Reference();
-            default:
-                return null;
-        }
+    public Category getCategoryByName(String categoryName) {
+        return switch (categoryName.toUpperCase()) {
+            case "FICTION" -> new Fiction();
+            case "SCITECH" -> new Technical();
+            case "REFERENCE" -> new Reference();
+            default -> null;
+        };
     }
 
 
@@ -672,9 +655,6 @@ public class Library implements Serializable {
         SearchByCreator creatorSearch = new SearchByCreator();
         List<Work> creatorResults = creatorSearch.search(term, allWorks);
         
-        //SearchByCategory categorySearch = new SearchByCategory();
-        //List<Work> categoryResults = categorySearch.search(term, allWorks);
-        
         // Combine results and remove duplicates, maintain order by ID
         List<Work> combinedResults = new ArrayList<>(titleResults);
         for (Work work : creatorResults) {
@@ -682,11 +662,6 @@ public class Library implements Serializable {
                 combinedResults.add(work);
             }
         }
-        //for (Work work : categoryResults) {
-            //if (!combinedResults.contains(work)) {
-                //combinedResults.add(work);
-            //}
-        //}
         
         return combinedResults.stream()
                 .sorted(Comparator.comparing(Work::getIdWork))
@@ -702,12 +677,10 @@ public class Library implements Serializable {
      */
     public List<String> showUserNotifications(int userId) throws NoSuchUserException {
         User user = userByKey(userId);
-        List<Object> notifications = user.getAndClearNotifications();
+        List<Notification> notifications = user.getAndClearNotifications();
         
         return notifications.stream()
-                .map(notification -> notification instanceof Notification 
-                    ? ((Notification) notification).getNotificationMessage()
-                    : notification.toString())
+                .map(Notification::getNotificationMessage)
                 .collect(Collectors.toList());
     }
     
@@ -732,8 +705,8 @@ public class Library implements Serializable {
     /**
      * Generic method to register user interest in notifications
      */
-    private void registerInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean addToUserList) {
-        interestMap.computeIfAbsent(workId, w -> new ArrayList<>()).add(userId);
+    public void registerInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean addToUserList) {
+        interestMap.computeIfAbsent(workId, _ -> new ArrayList<>()).add(userId);
         
         if (addToUserList) {
             User user = _users.get(userId);
@@ -747,14 +720,14 @@ public class Library implements Serializable {
     /**
      * Sends availability notifications to interested users when a work becomes available
      */
-    private void sendAvailabilityNotifications(int workId) {
+    public void sendAvailabilityNotifications(int workId) {
         sendNotifications(_availabilityInterests, workId, true);
     }
     
     /**
      * Sends borrowing notifications to interested users when a work is borrowed
      */
-    private void sendBorrowingNotifications(int workId) {
+    public void sendBorrowingNotifications(int workId) {
         sendNotifications(_borrowingInterests, workId, false);
     }
     
@@ -764,7 +737,7 @@ public class Library implements Serializable {
      * @param workId the work ID
      * @param isAvailability true for availability notifications, false for borrowing
      */
-    private void sendNotifications(Map<Integer, List<Integer>> interestMap, int workId, boolean isAvailability) {
+    public void sendNotifications(Map<Integer, List<Integer>> interestMap, int workId, boolean isAvailability) {
         List<Integer> interestedUsers = interestMap.get(workId);
         if (interestedUsers == null || interestedUsers.isEmpty()) return;
         
