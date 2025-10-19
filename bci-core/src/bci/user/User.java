@@ -1,8 +1,8 @@
 package bci.user;
 
 import bci.user.behaviorInterface.*;
-import bci.Notification;
-import bci.Request;
+import bci.request.Request;
+import bci.notification.Notification;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,6 +24,7 @@ public class User implements Serializable {
     private int _consecutiveOnTime;
     private List<Integer> _interestWork; 
     private List<Notification> _notifications; 
+    private List<Integer> _requestedWorks; // works currently requested by the user
     
 
     public User(int id, String name, String email) {
@@ -38,6 +39,7 @@ public class User implements Serializable {
         _consecutiveOnTime = 0;
         _interestWork = new ArrayList<>();
         _notifications = new ArrayList<>();
+        _requestedWorks = new ArrayList<>();
     }
 
     public void suspend() {
@@ -130,6 +132,29 @@ public class User implements Serializable {
      */
     public void addNotification(Notification notification) {
         _notifications.add(notification);
+    }
+
+    /**
+     * Add a work id to the list of works currently requested by the user.
+     */
+    public void addRequestedWork(int workId) {
+        if (!_requestedWorks.contains(workId)) {
+            _requestedWorks.add(workId);
+        }
+    }
+
+    /**
+     * Remove a work id from the list of works currently requested by the user.
+     */
+    public void removeRequestedWork(int workId) {
+        _requestedWorks.remove(Integer.valueOf(workId));
+    }
+
+    /**
+     * Check whether the user currently has an active request for the given work.
+     */
+    public boolean hasRequestedWork(int workId) {
+        return _requestedWorks.contains(workId);
     }
     
     /**

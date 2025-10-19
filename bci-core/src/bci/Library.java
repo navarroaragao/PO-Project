@@ -1,6 +1,10 @@
 package bci;
 
 import bci.exceptions.*;
+import bci.notification.AvailabilityNotification;
+import bci.notification.BorrowingNotification;
+import bci.notification.Notification;
+import bci.request.Request;
 import bci.user.*;
 import bci.work.*;
 import bci.work.workCategory.*;
@@ -271,6 +275,8 @@ public class Library implements Serializable {
             work.removeCopy();
             user.setCurrentRequests(user.getCurrentRequests() + 1);
             _activeRequests.add(request); // Track active request
+            // Track requested work in the user record
+            user.addRequestedWork(workId);
             
             // Remove borrowing interest for this user since they successfully got the work
             removeBorrowingInterest(userId, workId);
@@ -329,6 +335,11 @@ public class Library implements Serializable {
         // Process the return
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
+    // Remove the requested work tracking from the user
+    user.removeRequestedWork(workId);
+
+    // Remove the active request from active requests list
+    _activeRequests.remove(activeRequest);
     
         
         // Send availability notifications if work was unavailable and now has copies

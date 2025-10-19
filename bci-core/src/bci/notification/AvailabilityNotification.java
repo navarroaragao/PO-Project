@@ -1,4 +1,4 @@
-package bci;
+package bci.notification;
 
 import bci.work.Work;
 

@@ -1,10 +1,12 @@
-package bci;
+package bci.request;
 
 import bci.user.User;
 import bci.work.Work;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
+
+import bci.request.rules.*;
 
 public class Request implements Serializable {
     

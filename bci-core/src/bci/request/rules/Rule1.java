@@ -1,4 +1,4 @@
-package bci;
+package bci.request.rules;
 
 import bci.user.User;
 import bci.work.Work;
@@ -12,11 +12,9 @@ public final class Rule1 implements Rules {
     
     @Override
     public boolean verify(User user, Work work) {
-        // TODO: Check if user already has an active request for this work
-        // This would require tracking active requests per user
-        // For now, return true as this functionality needs to be implemented
-        // in the Library class to track active requests
-        return true;
+        // Check whether the user already has an active request for this work
+        if (user == null || work == null) return false;
+        return !user.hasRequestedWork(work.getIdWork());
     }
     
     public int getId() {

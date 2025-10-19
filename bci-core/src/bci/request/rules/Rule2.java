@@ -1,4 +1,4 @@
-package bci;
+package bci.request.rules;
 
 import bci.user.User;
 import bci.work.Work;

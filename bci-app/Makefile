@@ -1,4 +1,4 @@
-PO_UILIB_DIR=/usr/share/java
+PO_UILIB_DIR=/root/002-7/po-uilib
 #PO_UILIB_DIR=../../po-uilib
 JARNAME=bci-app
 

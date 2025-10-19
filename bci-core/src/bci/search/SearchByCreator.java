@@ -2,7 +2,7 @@ package bci.search;
 
 import java.util.List;
 import java.util.ArrayList;
-import bci.Search;
+
 import bci.work.Work;
 import bci.work.workType.Book;
 import bci.creator.Creator;

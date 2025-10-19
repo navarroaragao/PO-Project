@@ -1,4 +1,4 @@
-package bci;
+package bci.search;
 
 import java.util.List;
 import bci.work.Work;

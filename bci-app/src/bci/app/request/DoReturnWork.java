@@ -28,16 +28,21 @@ class DoReturnWork extends Command<LibraryManager> {
             // Process work return
             int fine = _receiver.getLibrary().returnWork(userId, workId);
             
-            // If there's a fine, show fine message and ask for payment
+            // If there's a fine, show the user's TOTAL outstanding fine (previous unpaid + current)
             if (fine > 0) {
-                _display.popup(Message.showFine(userId, fine));
-                
+                // returnWork already added the current fine to the user's record, so fetch total
+                bci.user.User user = _receiver.getLibrary().getUser(userId);
+                int totalFine = (user != null) ? user.getFines() : fine;
+
+                _display.popup(Message.showFine(userId, totalFine));
+
                 // Ask user if they want to pay the fine
                 boolean wantsToPay = Form.confirm(Prompt.finePaymentChoice());
-                
+
                 if (wantsToPay) {
                     try {
-                        _receiver.getLibrary().payFine(userId, fine);
+                        // Pay the total outstanding fine (payFine clears fines regardless of amount)
+                        _receiver.getLibrary().payFine(userId, totalFine);
                     } catch (bci.exceptions.UserIsActiveException e) {
                     }
                 }
