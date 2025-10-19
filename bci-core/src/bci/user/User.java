@@ -161,6 +161,14 @@ public class User implements Serializable {
         _interestWork.remove(Integer.valueOf(workId));
     }
 
+    /**
+     * Checks if the user has pending notifications without clearing them
+     * @return true if the user has notifications, false otherwise
+     */
+    public boolean hasNotifications() {
+        return !_notifications.isEmpty();
+    }
+
     // ========== GETTERS ==========
     
     public int getIdUser() {

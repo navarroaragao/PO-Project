@@ -145,13 +145,13 @@ public class Request implements Serializable {
     }
     
     /**
-     * Returns the request - sets the devolution date and updates work availability
+     * Returns the request - sets the devolution date
      * 
      * @param returnDate the date when the work is returned
      */
     public void returnWork(int returnDate) {
         this._devolutionDate = returnDate;
-        _work.addCopy(); // Make the work available again
+        _work.addCopy();
     }
 
     // ========== GETTERS ==========

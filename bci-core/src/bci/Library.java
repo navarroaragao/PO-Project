@@ -329,6 +329,7 @@ public class Library implements Serializable {
         // Process the return
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
+    
         
         // Send availability notifications if work was unavailable and now has copies
         if (workWasUnavailable) {
@@ -519,7 +520,12 @@ public class Library implements Serializable {
      * Generic method to register user interest in notifications
      */
     public void registerInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean addToUserList) {
-        interestMap.computeIfAbsent(workId, _ -> new ArrayList<>()).add(userId);
+        List<Integer> interestedUsers = interestMap.get(workId);
+        if (interestedUsers == null) {
+            interestedUsers = new ArrayList<>();
+            interestMap.put(workId, interestedUsers);
+        }
+        interestedUsers.add(userId);
         
         if (addToUserList) {
             User user = _users.get(userId);
@@ -557,13 +563,16 @@ public class Library implements Serializable {
         Work work = _works.get(workId);
         if (work == null) return;
         
-        Notification notification = isAvailability 
-            ? new AvailabilityNotification(_currentDate, work)
-            : new BorrowingNotification(_currentDate, work);
-        
+        // Create a new notification for each user to ensure current state
         for (Integer userId : interestedUsers) {
             User user = _users.get(userId);
             if (user != null) {
+                Notification notification;
+                if (isAvailability) {
+                    notification = new AvailabilityNotification(_currentDate, work);
+                } else {
+                    notification = new BorrowingNotification(_currentDate, work);
+                }
                 user.addNotification(notification);
                 if (isAvailability) {
                     user.removeInterestWork(workId); // Remove interest after availability notification
