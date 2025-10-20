@@ -5,3 +5,10 @@
 *.dat
 *.import
 po-uilib
+cumpridor
+faltoso
+requisicao
+run-tests.sh
+tests/
+user
+works

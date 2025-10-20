@@ -10,19 +10,15 @@ public class AvailabilityNotification extends Notification {
     @java.io.Serial
     private static final long serialVersionUID = 202507171006L;
     
-    private Work _work;
+    private String _onTimeNotification;
     
     public AvailabilityNotification(int timestamp, Work work) {
         super(timestamp);
-        _work = work;
-    }
-    
-    public Work getWork() {
-        return _work;
+        _onTimeNotification = work.toString();
     }
     
     @Override
     public String getNotificationMessage() {
-        return "DISPONIBILIDADE: " + _work.toString();
+        return "DISPONIBILIDADE: " + _onTimeNotification;
     }
 }

@@ -278,8 +278,9 @@ public class Library implements Serializable {
             // Track requested work in the user record
             user.addRequestedWork(workId);
             
-            // Remove borrowing interest for this user since they successfully got the work
+            // Remove both borrowing and availability interests since they successfully got the work
             removeBorrowingInterest(userId, workId);
+            removeAvailabilityInterest(userId, workId);
             
             // Send borrowing notifications to interested users
             sendBorrowingNotifications(workId);
@@ -528,6 +529,27 @@ public class Library implements Serializable {
     }
     
     /**
+     * Removes a user's interest in availability notifications for a specific work
+     * @param userId the user ID
+     * @param workId the work ID
+     */
+    public void removeAvailabilityInterest(int userId, int workId) {
+        List<Integer> interestedUsers = _availabilityInterests.get(workId);
+        if (interestedUsers != null) {
+            interestedUsers.remove(Integer.valueOf(userId));
+            if (interestedUsers.isEmpty()) {
+                _availabilityInterests.remove(workId);
+            }
+            // Also remove from user's interest list
+            User user = _users.get(userId);
+            if (user != null) {
+                user.removeInterestWork(workId);
+            }
+            _changed = true;
+        }
+    }
+    
+    /**
      * Generic method to register user interest in notifications
      */
     public void registerInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean addToUserList) {
@@ -585,15 +607,9 @@ public class Library implements Serializable {
                     notification = new BorrowingNotification(_currentDate, work);
                 }
                 user.addNotification(notification);
-                if (isAvailability) {
-                    user.removeInterestWork(workId);
-                }
             }
         }
         
-        if (isAvailability) {
-            interestMap.remove(workId); // Clear availability interests after notification
-        }
         _changed = true;
     }
 

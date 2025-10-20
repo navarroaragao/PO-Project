@@ -102,6 +102,9 @@ public class User implements Serializable {
         else if (_behavior instanceof Overdue && _consecutiveOnTime >= 3) {
             _behavior = new Normal();
         }
+        else if (_behavior instanceof Dutiful && _consecutiveOnTime == 0) {
+            _behavior = new Normal();
+        }
         // Caso padrão para novos utentes ou situações intermédias
         else if (_consecutiveOnTime == 0 && _consecutiveLate == 0) {
             _behavior = new Normal();

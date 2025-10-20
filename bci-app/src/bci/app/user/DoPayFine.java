@@ -29,10 +29,7 @@ class DoPayFine extends Command<LibraryManager> {
             }
             
             int fineAmount = user.getFines();
-            
-            if (fineAmount > 0) {
-                _receiver.getLibrary().payFine(userId, fineAmount);
-            }
+            _receiver.getLibrary().payFine(userId, fineAmount);
             
         } catch (bci.exceptions.NoSuchUserException e) {
             throw new NoSuchUserException(userId);

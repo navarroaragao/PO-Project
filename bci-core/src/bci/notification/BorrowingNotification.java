@@ -10,19 +10,15 @@ public class BorrowingNotification extends Notification {
     @java.io.Serial
     private static final long serialVersionUID = 202507171005L;
     
-    private Work _work;
+    private String _onTimeNotification;
     
     public BorrowingNotification(int timestamp, Work work) {
         super(timestamp);
-        _work = work;
-    }
-    
-    public Work getWork() {
-        return _work;
+        _onTimeNotification = work.toString();
     }
     
     @Override
     public String getNotificationMessage() {
-        return "REQUISIÇÃO: " + _work.toString();
+        return "REQUISIÇÃO: " + _onTimeNotification;
     }
 }
