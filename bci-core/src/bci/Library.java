@@ -731,13 +731,14 @@ public class Library implements Serializable {
     }
 
     /**
-     * Returns a list of string representations of all works, sorted by their work ID.
+     * Shows all works in the library, ordered by their IDs.
      *
      * @return a {@code List<String>} containing the string representations of the works,
      *         sorted in ascending order by their IDs.
      */
     public List<String> showWorks() {
         return _works.values().stream()
+            .filter(work -> work.getTotalCopies() > 0)
             .sorted(Comparator.comparing(Work::getIdWork))
             .map(Work::toString)
             .collect(Collectors.toList());
@@ -752,6 +753,7 @@ public class Library implements Serializable {
     public List<String> showWorksByCreator(String creatorName) throws NoSuchCreatorException {
         Creator creator = creatorByKey(creatorName);
         return creator.getWorks().stream()
+            .filter(work -> work.getTotalCopies() > 0)
             .sorted(Comparator.comparing(work -> work.getTitle().toLowerCase(Locale.getDefault())))
             .map(Work::toString)
             .collect(Collectors.toList());
@@ -797,6 +799,7 @@ public class Library implements Serializable {
         //}
         
         return combinedResults.stream()
+                .filter(work -> work.getTotalCopies() > 0)
                 .sorted(Comparator.comparing(Work::getIdWork))
                 .map(Work::toString)
                 .collect(Collectors.toList());
