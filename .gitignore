@@ -22,3 +22,5 @@ Thumbs.db
 *.swo
 .vscode/
 .idea/
+po-uilib-202408310000/
+.DS_Store

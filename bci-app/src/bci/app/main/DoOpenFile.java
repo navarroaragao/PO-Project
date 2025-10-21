@@ -3,7 +3,6 @@ package bci.app.main;
 import bci.LibraryManager;
 import bci.app.exceptions.FileOpenFailedException;
 import bci.exceptions.UnavailableFileException;
-import bci.exceptions.ImportFileException;
 import pt.tecnico.uilib.forms.Form;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
