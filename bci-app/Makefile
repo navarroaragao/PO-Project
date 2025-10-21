@@ -1,5 +1,5 @@
-PO_UILIB_DIR=/root/002-7/po-uilib
-#PO_UILIB_DIR=../../po-uilib
+#PO_UILIB_DIR=/root/002/po-uilib
+PO_UILIB_DIR=../../po-uilib
 JARNAME=bci-app
 
 all:

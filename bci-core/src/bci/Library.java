@@ -389,6 +389,18 @@ public class Library implements Serializable {
     }
 
     /**
+     * Checks if a user has overdue works
+     * @param userId the user ID
+     * @return true if user has overdue works, false otherwise
+     */
+    private boolean hasOverdueWorks(int userId) {
+        return _activeRequests.stream()
+            .anyMatch(request -> request.getUser().getIdUser() == userId && 
+                      request.getDevolutionDate() == 0 && 
+                      request.isOverdue(_currentDate));
+    }
+
+    /**
      * Verifica e atualiza o status de um utente baseado em multas e obras em atraso.
      * Utente é suspenso se tiver multas ou obras requisitadas fora do prazo.
      * 
@@ -398,19 +410,8 @@ public class Library implements Serializable {
     public void updateUserStatus(int userId) throws NoSuchUserException {
         User user = userByKey(userId);
         
-        // Check for overdue works
-        boolean hasOverdueWorks = false;
-        for (Request request : _activeRequests) {
-            if (request.getUser().getIdUser() == userId && 
-                request.getDevolutionDate() == 0 && 
-                request.isOverdue(_currentDate)) {
-                hasOverdueWorks = true;
-                break;
-            }
-        }
-        
         // Suspend if has fines or overdue works, otherwise activate
-        if (user.getFines() > 0 || hasOverdueWorks) {
+        if (user.getFines() > 0 || hasOverdueWorks(userId)) {
             user.suspend();
         } else {
             user.activate();
@@ -518,14 +519,7 @@ public class Library implements Serializable {
      * @param workId the work ID
      */
     public void removeBorrowingInterest(int userId, int workId) {
-        List<Integer> interestedUsers = _borrowingInterests.get(workId);
-        if (interestedUsers != null) {
-            interestedUsers.remove(Integer.valueOf(userId));
-            if (interestedUsers.isEmpty()) {
-                _borrowingInterests.remove(workId);
-            }
-            _changed = true;
-        }
+        removeInterest(_borrowingInterests, userId, workId, false);
     }
     
     /**
@@ -534,16 +528,29 @@ public class Library implements Serializable {
      * @param workId the work ID
      */
     public void removeAvailabilityInterest(int userId, int workId) {
-        List<Integer> interestedUsers = _availabilityInterests.get(workId);
+        removeInterest(_availabilityInterests, userId, workId, true);
+    }
+    
+    /**
+     * Generic method to remove user interest from notification maps
+     * @param interestMap the interest map to modify
+     * @param userId the user ID
+     * @param workId the work ID
+     * @param removeFromUserList whether to also remove from user's interest list
+     */
+    private void removeInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean removeFromUserList) {
+        List<Integer> interestedUsers = interestMap.get(workId);
         if (interestedUsers != null) {
             interestedUsers.remove(Integer.valueOf(userId));
             if (interestedUsers.isEmpty()) {
-                _availabilityInterests.remove(workId);
+                interestMap.remove(workId);
             }
-            // Also remove from user's interest list
-            User user = _users.get(userId);
-            if (user != null) {
-                user.removeInterestWork(workId);
+            
+            if (removeFromUserList) {
+                User user = _users.get(userId);
+                if (user != null) {
+                    user.removeInterestWork(workId);
+                }
             }
             _changed = true;
         }
@@ -731,14 +738,22 @@ public class Library implements Serializable {
     }
 
     /**
+     * Filters works to include only those with total copies > 0
+     * @param works stream of works to filter
+     * @return filtered stream
+     */
+    private java.util.stream.Stream<Work> filterAvailableWorks(java.util.stream.Stream<Work> works) {
+        return works.filter(work -> work.getTotalCopies() > 0);
+    }
+
+    /**
      * Shows all works in the library, ordered by their IDs.
      *
      * @return a {@code List<String>} containing the string representations of the works,
      *         sorted in ascending order by their IDs.
      */
     public List<String> showWorks() {
-        return _works.values().stream()
-            .filter(work -> work.getTotalCopies() > 0)
+        return filterAvailableWorks(_works.values().stream())
             .sorted(Comparator.comparing(Work::getIdWork))
             .map(Work::toString)
             .collect(Collectors.toList());
@@ -752,8 +767,7 @@ public class Library implements Serializable {
      */
     public List<String> showWorksByCreator(String creatorName) throws NoSuchCreatorException {
         Creator creator = creatorByKey(creatorName);
-        return creator.getWorks().stream()
-            .filter(work -> work.getTotalCopies() > 0)
+        return filterAvailableWorks(creator.getWorks().stream())
             .sorted(Comparator.comparing(work -> work.getTitle().toLowerCase(Locale.getDefault())))
             .map(Work::toString)
             .collect(Collectors.toList());
@@ -774,32 +788,18 @@ public class Library implements Serializable {
 
         List<Work> allWorks = getAllWorks();
         
-        // Search by title
+        // Search by title and creator, combine results
         SearchByTitle titleSearch = new SearchByTitle();
-        List<Work> titleResults = titleSearch.search(term, allWorks);
-        
-        // Search by creator
         SearchByCreator creatorSearch = new SearchByCreator();
-        List<Work> creatorResults = creatorSearch.search(term, allWorks);
         
-        //SearchByCategory categorySearch = new SearchByCategory();
-        //List<Work> categoryResults = categorySearch.search(term, allWorks);
+        List<Work> combinedResults = new ArrayList<>(titleSearch.search(term, allWorks));
         
-        // Combine results and remove duplicates, maintain order by ID
-        List<Work> combinedResults = new ArrayList<>(titleResults);
-        for (Work work : creatorResults) {
-            if (!combinedResults.contains(work)) {
-                combinedResults.add(work);
-            }
-        }
-        //for (Work work : categoryResults) {
-            //if (!combinedResults.contains(work)) {
-                //combinedResults.add(work);
-            //}
-        //}
+        // Add creator results, avoiding duplicates
+        creatorSearch.search(term, allWorks).stream()
+            .filter(work -> !combinedResults.contains(work))
+            .forEach(combinedResults::add);
         
-        return combinedResults.stream()
-                .filter(work -> work.getTotalCopies() > 0)
+        return filterAvailableWorks(combinedResults.stream())
                 .sorted(Comparator.comparing(Work::getIdWork))
                 .map(Work::toString)
                 .collect(Collectors.toList());
