@@ -336,11 +336,11 @@ public class Library implements Serializable {
         // Process the return
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
-    // Remove the requested work tracking from the user
-    user.removeRequestedWork(workId);
+        // Remove the requested work tracking from the user
+        user.removeRequestedWork(workId);
 
-    // Remove the active request from active requests list
-    _activeRequests.remove(activeRequest);
+        // Remove the active request from active requests list
+        _activeRequests.remove(activeRequest);
     
         
         // Send availability notifications if work was unavailable and now has copies
@@ -513,6 +513,15 @@ public class Library implements Serializable {
     public void registerBorrowingInterest(int userId, int workId) {
         registerInterest(_borrowingInterests, userId, workId, false);
     }
+
+    /**
+     * Removes a user's interest in availability notifications for a specific work
+     * @param userId the user ID
+     * @param workId the work ID
+     */
+    public void removeAvailabilityInterest(int userId, int workId) {
+        removeInterest(_availabilityInterests, userId, workId, true);
+    }
     
     /**
      * Removes a user's interest in borrowing notifications for a specific work
@@ -523,15 +532,7 @@ public class Library implements Serializable {
         removeInterest(_borrowingInterests, userId, workId, false);
     }
     
-    /**
-     * Removes a user's interest in availability notifications for a specific work
-     * @param userId the user ID
-     * @param workId the work ID
-     */
-    public void removeAvailabilityInterest(int userId, int workId) {
-        removeInterest(_availabilityInterests, userId, workId, true);
-    }
-    
+
     /**
      * Generic method to remove user interest from notification maps
      * @param interestMap the interest map to modify
