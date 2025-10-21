@@ -112,6 +112,114 @@ public class LibraryManager {
 
   // ========== GETTERS ==========
 
+  // ========== LIBRARY FACADE METHODS ==========
+  
+  /**
+   * Gets a user by ID.
+   * @param userId the user ID
+   * @return the user
+   * @throws NoSuchUserException if user doesn't exist
+   */
+  public bci.user.User getUser(int userId) throws NoSuchUserException {
+    return _library.userByKey(userId);
+  }
+  
+  /**
+   * Gets a work by ID.
+   * @param workId the work ID
+   * @return the work
+   * @throws NoSuchWorkException if work doesn't exist
+   */
+  public bci.work.Work getWork(int workId) throws NoSuchWorkException {
+    return _library.workByKey(workId);
+  }
+  
+  /**
+   * Processes a work request.
+   */
+  public int requestWork(int userId, int workId) throws NoSuchUserException, NoSuchWorkException, BorrowingRuleFailedException {
+    return _library.requestWork(userId, workId);
+  }
+  
+  /**
+   * Processes a work return.
+   */
+  public int returnWork(int userId, int workId) throws NoSuchUserException, NoSuchWorkException, WorkNotBorrowedByUserException {
+    return _library.returnWork(userId, workId);
+  }
+  
+  /**
+   * Processes fine payment.
+   */
+  public boolean payFine(int userId, int amount) throws NoSuchUserException, UserIsActiveException {
+    return _library.payFine(userId, amount);
+  }
+  
+  /**
+   * Shows all users.
+   */
+  public java.util.List<String> showUsers() {
+    return _library.showUsers();
+  }
+  
+  /**
+   * Shows all works.
+   */
+  public java.util.List<String> showWorks() {
+    return _library.showWorks();
+  }
+  
+  /**
+   * Shows works by creator.
+   */
+  public java.util.List<String> showWorksByCreator(String creatorName) throws NoSuchCreatorException {
+    return _library.showWorksByCreator(creatorName);
+  }
+  
+  /**
+   * Changes work inventory.
+   */
+  public void changeWorkInventory(int workId, int amount) throws NoSuchWorkException {
+    _library.changeWorkInventory(workId, amount);
+  }
+  
+  /**
+   * Registers availability interest.
+   */
+  public void registerAvailabilityInterest(int userId, int workId) throws NoSuchUserException, NoSuchWorkException {
+    _library.registerAvailabilityInterest(userId, workId);
+  }
+  
+  /**
+   * Registers borrowing interest.
+   */
+  public void registerBorrowingInterest(int userId, int workId) throws NoSuchUserException, NoSuchWorkException {
+    _library.registerBorrowingInterest(userId, workId);
+  }
+  
+  /**
+   * Gets current date.
+   */
+  public int getCurrentDate() {
+    return _library.getCurrentDate();
+  }
+  
+  /**
+   * Shows user notifications.
+   */
+  public java.util.List<String> showUserNotifications(int userId) throws NoSuchUserException {
+    return _library.showUserNotifications(userId);
+  }
+  
+  /**
+   * Processes user registration.
+   */
+  public bci.user.User processUser(String... fields) throws UserRegistrationFailedException {
+    return _library.processUser(fields);
+  }
+
+  // ========== GETTERS ==========
+
   /**
   * @return true if the library has changed since the last save.
   */
@@ -119,7 +227,7 @@ public class LibraryManager {
     return _library.getChanged();
   }
 
-/**
+  /**
    * Gets the current library.
    * @return the current library
    */

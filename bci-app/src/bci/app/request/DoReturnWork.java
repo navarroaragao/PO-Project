@@ -26,12 +26,12 @@ class DoReturnWork extends Command<LibraryManager> {
         
         try {
             // Process work return
-            int fine = _receiver.getLibrary().returnWork(userId, workId);
+            int fine = _receiver.returnWork(userId, workId);
             
             // If there's a fine, show the user's TOTAL outstanding fine (previous unpaid + current)
             if (fine > 0) {
-                // returnWork already added the current fine to the user's record, so fetch total
-                bci.user.User user = _receiver.getLibrary().getUser(userId);
+                // Retrieve user to obtain current total fines (returnWork already added the current fine)
+                bci.user.User user = _receiver.getUser(userId);
                 int totalFine = (user != null) ? user.getFines() : fine;
 
                 _display.popup(Message.showFine(userId, totalFine));
@@ -41,9 +41,11 @@ class DoReturnWork extends Command<LibraryManager> {
 
                 if (wantsToPay) {
                     try {
-                        // Pay the total outstanding fine (payFine clears fines regardless of amount)
-                        _receiver.getLibrary().payFine(userId, totalFine);
+                        // Pay the total outstanding fine (library.payFine ignores the amount and clears fines,
+                        // but passing the total makes the intent clear and matches DoPayFine behavior)
+                        _receiver.payFine(userId, totalFine);
                     } catch (bci.exceptions.UserIsActiveException e) {
+                        // Should not happen since user has fines
                     }
                 }
             }

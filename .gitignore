@@ -12,3 +12,13 @@ run-tests.sh
 tests/
 user
 works
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+*.log
+*~
+*.swp
+*.swo
+.vscode/
+.idea/

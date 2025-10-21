@@ -25,8 +25,8 @@ class DoRequestWork extends Command<LibraryManager> {
         int workId = integerField("workId");
         
         try {
-            // Use library's requestWork method for interactive requests
-            int requestLimit = _receiver.getLibrary().requestWork(userId, workId);
+            // All rules passed - proceed with the request
+            int requestLimit = _receiver.requestWork(userId, workId);
             
             // Show return day message for successful requests
             _display.popup(Message.workReturnDay(workId, requestLimit));
@@ -41,8 +41,12 @@ class DoRequestWork extends Command<LibraryManager> {
             if (e.getRuleId() == 3) { // Rule 3: work not available
                 boolean wantsNotification = Form.confirm(Prompt.returnNotificationPreference());
                 if (wantsNotification) {
-                    _receiver.getLibrary().registerAvailabilityInterest(userId, workId);
-                    //_receiver.getLibrary().registerBorrowingInterest(userId, workId);
+                    try {
+                        _receiver.registerAvailabilityInterest(userId, workId);
+                        //_receiver.registerBorrowingInterest(userId, workId);
+                    } catch (bci.exceptions.NoSuchUserException | bci.exceptions.NoSuchWorkException ex) {
+                        // Should not happen since we already validated user and work exist
+                    }
                 }
             }
             else {
