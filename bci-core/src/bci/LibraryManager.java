@@ -110,9 +110,9 @@ public class LibraryManager {
         return _library.searchWorks(term);
     }
 
-  // ========== GETTERS ==========
 
-  // ========== LIBRARY FACADE METHODS ==========
+
+
   
   /**
    * Gets a user by ID.
@@ -218,7 +218,8 @@ public class LibraryManager {
     return _library.processUser(fields);
   }
 
-  // ========== GETTERS ==========
+
+
 
   /**
   * @return true if the library has changed since the last save.
@@ -235,7 +236,8 @@ public class LibraryManager {
     return _library;
   }
 
-  // ========== SETTERS ==========
+
+  
 
   /**
    * Sets the current library.

@@ -250,7 +250,7 @@ public class Library implements Serializable {
     }
 
     /**
-     * Processes a work request for interactive use.
+     * Processes a work request.
      * 
      * @param userId the user ID
      * @param workId the work ID
@@ -264,32 +264,26 @@ public class Library implements Serializable {
         User user = userByKey(userId);
         Work work = workByKey(workId);
         
-        // Create the request
         Request request = new Request(user, work, _currentDate);
         
-        // Verify borrowing rules
         int ruleViolated = request.identifyRule();
         
         if (ruleViolated == 0) {
-            // All rules passed, proceed with the request
+
             work.removeCopy();
             user.setCurrentRequests(user.getCurrentRequests() + 1);
-            _activeRequests.add(request); // Track active request
-            // Track requested work in the user record
+            _activeRequests.add(request);
             user.addRequestedWork(workId);
-            
-            // Remove both borrowing and availability interests since they successfully got the work
+
             removeBorrowingInterest(userId, workId);
             removeAvailabilityInterest(userId, workId);
             
-            // Send borrowing notifications to interested users
             sendBorrowingNotifications(workId);
             
             _changed = true;
             
-            return request.getRequestLimit(); // Return limit date for success message
+            return request.getRequestLimit();
         } else {
-            // Rule violated, throw appropriate exception
             throw new BorrowingRuleFailedException(userId, workId, ruleViolated);
         }
     }
@@ -307,55 +301,45 @@ public class Library implements Serializable {
     public int returnWork(int userId, int workId) throws NoSuchUserException, NoSuchWorkException, 
                                                          WorkNotBorrowedByUserException {
         User user = userByKey(userId);
-        // Validate that work exists
         workByKey(workId);
         
-        // Find the active request for this user and work
         Request activeRequest = null;
         for (Request request : _activeRequests) {
             if (request.getUser().getIdUser() == userId && 
                 request.getWork().getIdWork() == workId && 
-                request.getDevolutionDate() == 0) { // Not yet returned
+                request.getDevolutionDate() == 0) {
                 activeRequest = request;
                 break;
             }
         }
         
-        // If no active request found, throw exception
         if (activeRequest == null) {
             throw new WorkNotBorrowedByUserException(workId, userId);
         }
         
-        // Calculate fine BEFORE marking as returned
         int fine = activeRequest.calculateFine(_currentDate);
         
-        // Check if the work was unavailable BEFORE processing the return
         Work work = activeRequest.getWork();
         boolean workWasUnavailable = work.getAvailableCopies() == 0;
         
-        // Process the return
         activeRequest.returnWork(_currentDate);
         user.setCurrentRequests(user.getCurrentRequests() - 1);
-        // Remove the requested work tracking from the user
+
         user.removeRequestedWork(workId);
 
-        // Remove the active request from active requests list
         _activeRequests.remove(activeRequest);
     
-        
-        // Send availability notifications if work was unavailable and now has copies
+
         if (workWasUnavailable) {
             sendAvailabilityNotifications(workId);
         }
         
-        // Check if return was on time and record it
         boolean wasOnTime = _currentDate <= activeRequest.getRequestLimit();
         user.recordReturn(wasOnTime);
         
-        // Add fine if any
         if (fine > 0) {
             user.addFine(fine);
-            user.suspend(); // User is suspended until fine is paid
+            user.suspend();
         }
         
         _changed = true;
@@ -374,15 +358,12 @@ public class Library implements Serializable {
     public boolean payFine(int userId, int amount) throws NoSuchUserException, UserIsActiveException {
         User user = userByKey(userId);
         
-        // Check if user is suspended and has fines to pay
         if (!user.isSuspended() || user.getFines() == 0) {
             throw new UserIsActiveException(userId);
         }
-        
 
-        user.zeroFine(amount); // Amount is ignored, always pays all fines
+        user.zeroFine(amount);
         
-        // Update user status based on fines and overdue works
         updateUserStatus(userId);
         
         _changed = true;
@@ -394,7 +375,7 @@ public class Library implements Serializable {
      * @param userId the user ID
      * @return true if user has overdue works, false otherwise
      */
-    private boolean hasOverdueWorks(int userId) {
+    public boolean hasOverdueWorks(int userId) {
         return _activeRequests.stream()
             .anyMatch(request -> request.getUser().getIdUser() == userId && 
                       request.getDevolutionDate() == 0 && 
@@ -402,16 +383,15 @@ public class Library implements Serializable {
     }
 
     /**
-     * Verifica e atualiza o status de um utente baseado em multas e obras em atraso.
-     * Utente é suspenso se tiver multas ou obras requisitadas fora do prazo.
-     * 
+     * Checks and updates a user's status based on fines and overdue borrowed works.
+     * A user is suspended if they have outstanding fines or any overdue requests.
+     *
      * @param userId the ID of the user to check
      * @throws NoSuchUserException if the user doesn't exist
      */
     public void updateUserStatus(int userId) throws NoSuchUserException {
         User user = userByKey(userId);
         
-        // Suspend if has fines or overdue works, otherwise activate
         if (user.getFines() > 0 || hasOverdueWorks(userId)) {
             user.suspend();
         } else {
@@ -422,16 +402,14 @@ public class Library implements Serializable {
     }
 
     /**
-     * Verifica e atualiza o status de todos os utentes no sistema.
-     * Deve ser chamado periodicamente ou quando a data avança.
+     * Checks and updates the status of all users in the system.
+     * Should be called periodically or when the current date advances.
      */
     public void updateAllUserStatuses() {
         for (User user : _users.values()) {
             try {
                 updateUserStatus(user.getIdUser());
-            } catch (NoSuchUserException e) {
-                // Should never happen since we're iterating over existing users
-            }
+            } catch (NoSuchUserException e) {}
         }
     }
 
@@ -459,16 +437,15 @@ public class Library implements Serializable {
     }
 
     /**
-     * Advances the current date by the specified number of days.
-     * If the number of days is greater than zero, the current date is incremented,
-     * all user statuses are updated based on overdue works, and the changed state is set to true.
+     * Advances the current date by the specified number of days
+     * If the number of days is greater than zero, the current date is incremented
      *
      * @param days the number of days to advance the current date; must be positive
      */
     public void advanceDate(int days) {
         if (days > 0) {
             _currentDate += days;
-            updateAllUserStatuses(); // Check for new overdue works and update suspensions
+            updateAllUserStatuses();
             setChanged(true);
         }
     }
@@ -485,7 +462,6 @@ public class Library implements Serializable {
             boolean wasUnavailable = work.getAvailableCopies() == 0;
             work.changeInventory(amount);
             
-            // If work was unavailable and now has copies (positive amount added), send notifications
             if (wasUnavailable && amount > 0 && work.getAvailableCopies() > 0) {
                 sendAvailabilityNotifications(workId);
             }
@@ -540,7 +516,7 @@ public class Library implements Serializable {
      * @param workId the work ID
      * @param removeFromUserList whether to also remove from user's interest list
      */
-    private void removeInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean removeFromUserList) {
+    public void removeInterest(Map<Integer, List<Integer>> interestMap, int userId, int workId, boolean removeFromUserList) {
         List<Integer> interestedUsers = interestMap.get(workId);
         if (interestedUsers != null) {
             interestedUsers.remove(Integer.valueOf(userId));
@@ -579,7 +555,8 @@ public class Library implements Serializable {
     }
     
     /**
-     * Sends availability notifications to interested users when a work becomes available
+     * Sends availability notifications to interested users, 
+     * when a work becomes available
      */
     public void sendAvailabilityNotifications(int workId) {
         sendNotifications(_availabilityInterests, workId, true);
@@ -605,7 +582,6 @@ public class Library implements Serializable {
         Work work = _works.get(workId);
         if (work == null) return;
         
-        // Create a new notification for each user to ensure current state
         for (Integer userId : interestedUsers) {
             User user = _users.get(userId);
             if (user != null) {
@@ -622,7 +598,9 @@ public class Library implements Serializable {
         _changed = true;
     }
 
-    // ========== GETTERS ==========
+
+
+
 
     /**
      * Gets a user by ID.
@@ -744,7 +722,7 @@ public class Library implements Serializable {
      * @param works stream of works to filter
      * @return filtered stream
      */
-    private java.util.stream.Stream<Work> filterAvailableWorks(java.util.stream.Stream<Work> works) {
+    public java.util.stream.Stream<Work> filterAvailableWorks(java.util.stream.Stream<Work> works) {
         return works.filter(work -> work.getTotalCopies() > 0);
     }
 
@@ -790,13 +768,11 @@ public class Library implements Serializable {
 
         List<Work> allWorks = getAllWorks();
         
-        // Search by title and creator, combine results
         SearchByTitle titleSearch = new SearchByTitle();
         SearchByCreator creatorSearch = new SearchByCreator();
         
         List<Work> combinedResults = new ArrayList<>(titleSearch.search(term, allWorks));
         
-        // Add creator results, avoiding duplicates
         creatorSearch.search(term, allWorks).stream()
             .filter(work -> !combinedResults.contains(work))
             .forEach(combinedResults::add);
@@ -822,7 +798,9 @@ public class Library implements Serializable {
                 .collect(Collectors.toList());
     }
 
-    // ========== SETTERS ==========
+
+
+    
 
     /**
      * Sets the changed state of the object.
