@@ -114,13 +114,8 @@ public class Request implements Serializable {
      * @return the fine amount (0 if not overdue, or €5 per day if overdue)
      */
     public int calculateFine(int currentDate) {
-        if (!isOverdue(currentDate)) {
-            return 0;
-        }
-        
         int daysLate = daysOverdue(currentDate);
-
-        return 5 * daysLate;
+        return daysLate * 5; // €5 per day
     }
     
     /**
