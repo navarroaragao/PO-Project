@@ -379,6 +379,7 @@ public class Library implements Serializable {
             throw new UserIsActiveException(userId);
         }
         
+
         user.zeroFine(amount); // Amount is ignored, always pays all fines
         
         // Update user status based on fines and overdue works
@@ -831,4 +832,5 @@ public class Library implements Serializable {
         _changed = changed;
     }
 }
+
 

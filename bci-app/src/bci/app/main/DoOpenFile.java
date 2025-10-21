@@ -24,14 +24,10 @@ class DoOpenFile extends Command<LibraryManager> {
             }
             
             String filename = Form.requestString(Prompt.openFile());
+            _receiver.load(filename);
             
-            if (filename.endsWith(".import")) {
-                _receiver.importFile(filename);
-            } else {
-                _receiver.load(filename);
-            }
             
-        } catch (UnavailableFileException | ImportFileException e) {
+        } catch (UnavailableFileException e) {
             throw new FileOpenFailedException(e);
         }
     }
