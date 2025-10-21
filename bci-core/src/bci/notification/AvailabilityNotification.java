@@ -2,9 +2,7 @@ package bci.notification;
 
 import bci.work.Work;
 
-/**
- * Notification sent when a work becomes available
- */
+
 public class AvailabilityNotification extends Notification {
     
     @java.io.Serial

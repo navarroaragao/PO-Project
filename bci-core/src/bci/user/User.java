@@ -24,7 +24,7 @@ public class User implements Serializable {
     private int _consecutiveOnTime;
     private List<Integer> _interestWork; 
     private List<Notification> _notifications; 
-    private List<Integer> _requestedWorks; // works currently requested by the user
+    private List<Integer> _requestedWorks; 
     
 
     public User(int id, String name, String email) {
@@ -66,17 +66,14 @@ public class User implements Serializable {
         _fines += value;
     }
 
-    /**
-     * Registra uma devolução e atualiza os contadores de comportamento
-     * @param wasOnTime true se a devolução foi feita no prazo
-     */
+
     public void recordReturn(boolean wasOnTime) {
         if (wasOnTime) {
             _consecutiveOnTime++;
-            _consecutiveLate = 0; // Reset late requests counter
+            _consecutiveLate = 0; 
         } else {
             _consecutiveLate++;
-            _consecutiveOnTime = 0; // Reset consecutive on time counter
+            _consecutiveOnTime = 0;
         }
         calculateAndUpdateBehavior();
     }
@@ -90,35 +87,23 @@ public class User implements Serializable {
     }
     
     public void calculateAndUpdateBehavior() {
-        // Cumpridor: 5 devoluções consecutivas no prazo
         if (_consecutiveOnTime >= 5) {
             _behavior = new Dutiful();
         }
-        // Faltoso: 3 devoluções consecutivas atrasadas
         else if (_consecutiveLate >= 3) {
             _behavior = new Overdue();
         }
-        // Recuperação de faltoso para normal: utente faltoso que fez 3 devoluções consecutivas no prazo
         else if (_behavior instanceof Overdue && _consecutiveOnTime >= 3) {
             _behavior = new Normal();
         }
         else if (_behavior instanceof Dutiful && _consecutiveOnTime == 0) {
             _behavior = new Normal();
         }
-        // Caso padrão para novos utentes ou situações intermédias
         else if (_consecutiveOnTime == 0 && _consecutiveLate == 0) {
             _behavior = new Normal();
         }
-        // Manter comportamento atual em casos intermédios
-        // (Dutiful que ainda não violou, Overdue que ainda não recuperou, Normal em progresso)
     }
     
-    /**
-     * Atualiza o status do utente baseado em multas e obras em atraso.
-     * Utente é suspenso se:
-     * - Tiver multas por pagar, OU
-     * - Tiver obras requisitadas fora do prazo de entrega
-     */
     public void updateStatus() {
         if (_fines > 0) {
             this.suspend();
@@ -126,77 +111,46 @@ public class User implements Serializable {
     }
     
     public void zeroFine(int amount) {
-        _fines = 0; // Sempre paga a multa inteiramente
+        _fines = 0;
     }
     
-    /**
-     * Adds a notification to the user's notification list
-     * @param notification the notification to add
-     */
     public void addNotification(Notification notification) {
         _notifications.add(notification);
     }
 
-    /**
-     * Add a work id to the list of works currently requested by the user.
-     */
     public void addRequestedWork(int workId) {
         if (!_requestedWorks.contains(workId)) {
             _requestedWorks.add(workId);
         }
     }
 
-    /**
-     * Remove a work id from the list of works currently requested by the user.
-     */
     public void removeRequestedWork(int workId) {
         _requestedWorks.remove(Integer.valueOf(workId));
     }
 
-    /**
-     * Check whether the user currently has an active request for the given work.
-     */
     public boolean hasRequestedWork(int workId) {
         return _requestedWorks.contains(workId);
     }
     
-    /**
-     * Gets all user notifications and clears the list
-     * @return list of notifications in the order they were received
-     */
     public List<Notification> getAndClearNotifications() {
         List<Notification> notifications = new ArrayList<>(_notifications);
         _notifications.clear();
         return notifications;
     }
     
-    /**
-     * Adds a work to the user's interest list for availability notifications
-     * @param workId the ID of the work the user is interested in
-     */
     public void addInterestWork(int workId) {
         if (!_interestWork.contains(workId)) {
             _interestWork.add(workId);
         }
     }
     
-    /**
-     * Removes a work from the user's interest list
-     * @param workId the ID of the work to remove from interests
-     */
     public void removeInterestWork(int workId) {
         _interestWork.remove(Integer.valueOf(workId));
     }
 
-    /**
-     * Checks if the user has pending notifications without clearing them
-     * @return true if the user has notifications, false otherwise
-     */
     public boolean hasNotifications() {
         return !_notifications.isEmpty();
     }
-
-    // ========== GETTERS ==========
     
     public int getIdUser() {
         return _idUser;
@@ -255,15 +209,9 @@ public class User implements Serializable {
         return _consecutiveOnTime;
     }
     
-    /**
-     * Gets the list of works the user is interested in
-     * @return list of work IDs
-     */
     public List<Integer> getInterestWorks() {
         return new ArrayList<>(_interestWork);
     }
-
-    // ========== SETTERS ==========
     
     public void setIdUser(int idUser) {
         this._idUser = idUser;
@@ -296,8 +244,6 @@ public class User implements Serializable {
     public void setConsecutiveOnTime(int consecutiveOnTime) {
         _consecutiveOnTime = consecutiveOnTime;
     } 
-
-    // ========== TOSTRING ==========
     
     @Override
     public String toString() {

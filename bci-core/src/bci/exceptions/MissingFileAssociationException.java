@@ -1,6 +1,5 @@
 package bci.exceptions;
 
-/** Thrown when an application is not associated with a file. */
 public class MissingFileAssociationException extends Exception {
 
     @java.io.Serial

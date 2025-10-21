@@ -1,6 +1,5 @@
 package bci.exceptions;
 
-/** Class encoding input file parsing issues. */
 public class UnrecognizedEntryException extends Exception {
 
     @java.io.Serial

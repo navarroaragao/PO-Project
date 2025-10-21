@@ -6,9 +6,7 @@ import bci.app.exceptions.UserIsActiveException;
 import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 
-/**
- * 4.2.5. Settle a fine.
- */
+
 class DoPayFine extends Command<LibraryManager> {
 
     DoPayFine(LibraryManager receiver) {
@@ -21,7 +19,6 @@ class DoPayFine extends Command<LibraryManager> {
         int userId = integerField("userId");
         
         try {
-            // Get the user's current fine amount to pay it all
             bci.user.User user = _receiver.getLibrary().getUser(userId);
             
             if (user == null) {

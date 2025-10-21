@@ -2,9 +2,7 @@ package bci.notification;
 
 import java.io.Serializable;
 
-/**
- * Abstract notification class
- */
+
 public abstract class Notification implements Serializable {
     
     @java.io.Serial
@@ -20,9 +18,5 @@ public abstract class Notification implements Serializable {
         return _timestamp;
     }
     
-    /**
-     * Gets the notification message to display
-     * @return formatted notification string
-     */
     public abstract String getNotificationMessage();
 }

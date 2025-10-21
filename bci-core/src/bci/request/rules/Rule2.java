@@ -3,9 +3,7 @@ package bci.request.rules;
 import bci.user.User;
 import bci.work.Work;
 
-/**
- * Rule 2: User cannot be suspended.
- */
+
 public final class Rule2 implements Rules {
     
     private final int _id = 2;

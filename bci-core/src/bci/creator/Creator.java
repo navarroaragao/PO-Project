@@ -44,7 +44,6 @@ public class Creator implements Serializable {
         return _works;
     }
 
-    // ========== EQUALS & TOSTRING ==========
     
     @Override
     public boolean equals(Object obj) {

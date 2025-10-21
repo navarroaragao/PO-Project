@@ -2,9 +2,7 @@ package bci.notification;
 
 import bci.work.Work;
 
-/**
- * Notification sent when a work is borrowed
- */
+
 public class BorrowingNotification extends Notification {
     
     @java.io.Serial

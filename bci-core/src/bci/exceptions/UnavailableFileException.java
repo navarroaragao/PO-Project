@@ -1,6 +1,5 @@
 package bci.exceptions;
 
-/** Class encoding file access failures. */
 public class UnavailableFileException extends Exception {
 
     @java.io.Serial

@@ -8,9 +8,7 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import pt.tecnico.uilib.forms.Form;
 
-/**
- * 4.4.1. Request work.
- */
+
 class DoRequestWork extends Command<LibraryManager> {
 
     DoRequestWork(LibraryManager receiver) {
@@ -25,10 +23,8 @@ class DoRequestWork extends Command<LibraryManager> {
         int workId = integerField("workId");
         
         try {
-            // All rules passed - proceed with the request
             int requestLimit = _receiver.requestWork(userId, workId);
             
-            // Show return day message for successful requests
             _display.popup(Message.workReturnDay(workId, requestLimit));
             
         } catch (bci.exceptions.NoSuchUserException e) {
@@ -38,15 +34,12 @@ class DoRequestWork extends Command<LibraryManager> {
             throw new NoSuchWorkException(workId);
 
         } catch (bci.exceptions.BorrowingRuleFailedException e) {
-            if (e.getRuleId() == 3) { // Rule 3: work not available
+            if (e.getRuleId() == 3) {
                 boolean wantsNotification = Form.confirm(Prompt.returnNotificationPreference());
                 if (wantsNotification) {
                     try {
                         _receiver.registerAvailabilityInterest(userId, workId);
-                        //_receiver.registerBorrowingInterest(userId, workId);
-                    } catch (bci.exceptions.NoSuchUserException | bci.exceptions.NoSuchWorkException ex) {
-                        // Should not happen since we already validated user and work exist
-                    }
+                    } catch (bci.exceptions.NoSuchUserException | bci.exceptions.NoSuchWorkException ex) {}
                 }
             }
             else {

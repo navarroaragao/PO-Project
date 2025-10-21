@@ -6,9 +6,7 @@ import pt.tecnico.uilib.menus.Command;
 import pt.tecnico.uilib.menus.CommandException;
 import java.util.List;
 
-/**
- * 4.2.3. Show notifications of a specific user.
- */
+
 class DoShowUserNotifications extends Command<LibraryManager> {
 
     DoShowUserNotifications(LibraryManager receiver) {

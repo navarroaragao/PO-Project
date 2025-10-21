@@ -58,15 +58,13 @@ public class Book extends Work {
         }
         return " - " + authors.toString() + " - " + _isbn;
     }
-
-    // ========== GETTERS ==========
     
     public String getIsbn() {
         return _isbn;
     }
     
     public List<Creator> getAuthor() {
-        return new ArrayList<>(_author); // Return a copy to maintain encapsulation
+        return new ArrayList<>(_author);
     }
     
     @Override
@@ -74,7 +72,6 @@ public class Book extends Work {
         return _author.isEmpty() ? null : _author.get(0);
     }
 
-    // ========== TOSTRING ==========
     
     @Override
     public String toString() {

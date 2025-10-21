@@ -33,7 +33,6 @@ public class DVD extends Work {
         return " - " + directorName + " - " + _igac;
     }
 
-    // ========== GETTERS ==========
     
     public String getIgac() {
         return _igac;
@@ -47,8 +46,7 @@ public class DVD extends Work {
     public Creator getCreator() {
         return _director;
     }
-
-    // ========== TOSTRING ==========
+    
     
     @Override
     public String toString() {

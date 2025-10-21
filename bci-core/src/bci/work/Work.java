@@ -23,7 +23,7 @@ public abstract class Work implements Serializable {
         _title = title;
         _price = price;
         _category = category;
-        _totalCopies = 1; // Default to 1 copy
+        _totalCopies = 1;
         _availableCopies = 1;
         
         if (creator != null) {
@@ -65,7 +65,6 @@ public abstract class Work implements Serializable {
     
     public abstract String getAdditionalInfo();
 
-    // ========== GETTERS ==========
     
     public int getIdWork() {
         return _idWork;
@@ -83,13 +82,7 @@ public abstract class Work implements Serializable {
         return _category;
     }
     
-    /**
-     * Returns the primary creator of this work.
-     * For books with multiple authors, returns the first author.
-     * For DVDs, returns the director.
-     * 
-     * @return the primary creator of this work, or null if no creator is set
-     */
+
     public abstract Creator getCreator();
     
     public int getTotalCopies() {
@@ -104,7 +97,6 @@ public abstract class Work implements Serializable {
         return _category != null ? _category.getName() : "Unknown";
     }
 
-    // ========== EQUALS & TOSTRING ==========
     
     @Override
     public boolean equals(Object obj) {
